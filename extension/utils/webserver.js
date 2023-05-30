@@ -27,13 +27,13 @@ var compiler = webpack(config);
 
 var server = new WebpackDevServer(
   {
-    https: false,
+    https: true, // set to true because http sockjs cannot be used when browsing https websites, if not working, try enable chrome://flags/#allow-insecure-localhost flag
     hot: true,
     liveReload: false,
     client: {
-      webSocketTransport: 'ws', // not using sockjs because it cannot be used over https, refer to https://github.com/lxieyang/chrome-extension-boilerplate-react/issues/150
+      webSocketTransport: 'sockjs', // another workaround is to change sockjs -> ws, refer to https://github.com/lxieyang/chrome-extension-boilerplate-react/issues/150
     },
-    webSocketServer: 'ws',
+    webSocketServer: 'sockjs',
     host: 'localhost',
     port: env.PORT,
     static: {
