@@ -80,9 +80,10 @@ var options = {
         test: new RegExp('.(' + fileExtensions.join('|') + ')$'),
         type: 'asset/resource',
         exclude: /node_modules/,
-        // loader: 'file-loader',
+        // // uncomment the loader and options to get customized file name, by default the filename of the resulting file is the hash of the file's contents with the original extension
+        // loader: 'file-loader', // can also consider using url-loader, which turn the asset into inline base-64 object
         // options: {
-        //   name: '[name].[ext]',
+        //   name: '[name].custom.[ext]',
         // },
       },
       {
@@ -100,7 +101,7 @@ var options = {
               getCustomTransformers: () => ({
                 before: [isDevelopment && ReactRefreshTypeScript()].filter(
                   Boolean
-                ),
+                ), // use fast refresh when is development
               }),
               transpileOnly: isDevelopment,
             },
@@ -118,7 +119,7 @@ var options = {
             options: {
               plugins: [
                 isDevelopment && require.resolve('react-refresh/babel'),
-              ].filter(Boolean),
+              ].filter(Boolean), // use fast refresh when is development
             },
           },
         ],
@@ -127,7 +128,7 @@ var options = {
     ],
   },
   resolve: {
-    alias: alias,
+    alias: alias, // can use import secrets from 'secrets'; ApiCall({ key: secrets.key });
     extensions: fileExtensions
       .map((extension) => '.' + extension)
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
