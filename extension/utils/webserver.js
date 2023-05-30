@@ -31,9 +31,9 @@ var server = new WebpackDevServer(
     hot: true,
     liveReload: false,
     client: {
-      webSocketTransport: 'sockjs',
+      webSocketTransport: 'ws', // not using sockjs because it cannot be used over https, refer to https://github.com/lxieyang/chrome-extension-boilerplate-react/issues/150
     },
-    webSocketServer: 'sockjs',
+    webSocketServer: 'ws',
     host: 'localhost',
     port: env.PORT,
     static: {
