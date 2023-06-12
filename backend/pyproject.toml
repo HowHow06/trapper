@@ -11,6 +11,11 @@ python = "^3.11"
 fastapi = "^0.97.0"
 uvicorn = "^0.22.0"
 python-dotenv = "^1.0.0"
+sqlmodel = "^0.0.8"
+pyjwt = "^2.7.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+alembic = "^1.11.1"
+mariadb = "^1.1.6"
 
 
 [build-system]
