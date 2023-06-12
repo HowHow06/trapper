@@ -12,5 +12,5 @@ def read_root():
 @app.get("/health-check")
 def read_root():
     return {
-        "db": settings.mysql_database
+        "db": settings.MARIADB_DATABASE
     }
