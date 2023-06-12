@@ -5,6 +5,7 @@ import os
 
 class Settings(BaseSettings):
     # Base
+    API_SERVER_PROJECT_NAME: str
     ENVIRONMENT: str
     API_PREFIX: str
     MARIADB_DATABASE: str
