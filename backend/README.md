@@ -1,64 +1,64 @@
-# Project Title
+# **Trapper FastAPI Backend Server**
 
-Provide a brief introduction about your project, what it does, and its purpose.
+This project contains a FastAPI backend server for the Trapper application.
 
-## Getting Started
+## **System Requirements**
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+Before you start, ensure that you have the following software installed on your machine:
 
-### Prerequisites
+- Python 3.11+
+- Poetry (Python package manager) (refer to [Poetry Official Page](https://python-poetry.org/docs/) for installation)
+- Visual Studio Code or your preferred code editor
 
-What things you need to install before starting:
+## **Setup**
 
-- Python 3.6 or higher
-- pip (Python package manager)
+Follow these steps to set up and start the FastAPI server:
 
-### Installing and Running the Project
+### **Clone the Repository**
 
-Follow these steps to setup and run the project:
+First, change to the server directory:
 
-1. Clone the repository to your local machine:
+```
+cd backend
 
-```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
 ```
 
-2. Setup a Python virtual environment:
+### **Set up the Virtual Environment**
 
-```bash
-python -m venv venv
+We use Poetry to manage dependencies and virtual environments. Set up a new environment and install the necessary dependencies with:
+
+```
+poetry install
+
 ```
 
-3. Activate the virtual environment:
-   The virtual environment will only be activated for the current terminal session. Need to run this command everytime you reopen this project in terminal.
+### **Activate the Virtual Environment**
 
-```bash
-venv\Scripts\activate # or source venv/bin/activate in Unix
+Activate the virtual environment with:
+
+```
+poetry shell
+
 ```
 
-4. Install the dependencies from the requirements.txt file:
+### **Run the Application in the Virtual Environment**
 
-```bash
-pip install -r requirements.txt
+Finally, start the FastAPI server with:
+
 ```
-
-5. Run the FastAPI server:
-
-```bash
 uvicorn main:app --reload
+
 ```
 
-Your FastAPI server should now be running at http://localhost:8000. You can access the interactive API documentation at http://localhost:8000/docs.
+> Note: if you dont want to run the application in poetry shell, use `poetry run uvicorn main:app --reload` instead
 
-## Running the tests
+Your server should now be running at **`http://localhost:8000`**.
 
-Explain how to run the automated tests for this system.
+### **Using the FastAPI server in VSCode**
 
-## Contributing
+To use the virtual environment in Visual Studio Code, follow these steps:
 
-If applicable, explain how others can contribute to this project.
-
-## Authors
-
-List the primary developers or maintainers.
+1. Activate the Poetry environment in the cmd using **`poetry shell`**.
+2. Get the path to the python in Poetry environment using **`where python`**.
+3. Open the Command Palette in VSCode (**`Ctrl+Shift+P`**), search for "Python: Select Interpreter", and click on it.
+4. Click on "Enter interpreter path" and paste in the path you got from step 2.
