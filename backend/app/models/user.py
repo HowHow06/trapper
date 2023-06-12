@@ -11,6 +11,3 @@ class User(SQLModel, table=True):
     hashed_password: str
     email: EmailStr
     created_at: datetime.datetime = datetime.datetime.now()
-
-    def verify_password(self, password):
-        return bcrypt.verify(password, self.hashed_password)
