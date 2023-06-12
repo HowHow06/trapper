@@ -1,1 +1,37 @@
-Generic single-database configuration.
+# **Alembic Cheat Sheet**
+
+## **Basics**
+
+- **Initialize Alembic**: **`alembic init <directory>`**
+- **Generate a migration script**: **`alembic revision --autogenerate -m "<message>"`**
+- **Apply migrations**: **`alembic upgrade head`**
+- **Rollback migrations**: **`alembic downgrade <revision>`**
+  - the revision can be -1, or first four characters of the migration file
+- **Show current revision**: **`alembic current`**
+
+## **Managing Migrations**
+
+- **Create a new migration**: **`alembic revision --autogenerate -m "<message>"`**
+- **Edit a migration script**: Open the generated migration script in **`<directory>/versions`** and make the necessary changes.
+- **Apply migrations**: **`alembic upgrade <revision>`**
+- **Rollback migrations**: **`alembic downgrade <revision>`**
+
+## **Command Line Options**
+
+- **Custom Alembic configuration**: **`alembic -c <config_file> <command>`**
+- **Verbose mode**: **`alembic --verbose <command>`**
+- **Dry run**: **`alembic --sql <command>`**
+- **Specify target database**: **`alembic --database <database_name> <command>`**
+
+## **Additional Commands**
+
+- **Show all available migrations**: **`alembic history`**
+- **Show migration script revisions**: **`alembic history --verbose`**
+- **Show migration script content**: **`alembic show <revision>`**
+- **Stamp a revision**: **`alembic stamp <revision>`**
+- **Create a new branch**: **`alembic branch <branch_name>`**
+- **Merge two branches**: **`alembic merge <branch_1> --branch-label <branch_2>`**
+
+For more detailed information and usage examples, please refer to the **[Alembic documentation](https://alembic.sqlalchemy.org/)**.
+
+Feel free to customize and format the cheat sheet according to your needs.
