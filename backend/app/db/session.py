@@ -3,8 +3,17 @@ from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
 
+
+def get_db_url():
+    return f"mysql+pymysql://{settings.MARIADB_USER}:{settings.MARIADB_PASSWORD}@{settings.MARIADB_SERVER}/{settings.MARIADB_DATABASE}"
+
+
+def get_async_db_url():
+    return f"mysql+aiomysql://{settings.MARIADB_USER}:{settings.MARIADB_PASSWORD}@{settings.MARIADB_SERVER}/{settings.MARIADB_DATABASE}"
+
+
 engine = create_async_engine(
-    f"mysql+aiomysql://{settings.MARIADB_USER}:{settings.MARIADB_PASSWORD}@localhost/{settings.MARIADB_DATABASE}", echo=True
+    get_async_db_url(), echo=True
 )  # use pymysql when it is sync engine
 
 # Create a sessionmaker

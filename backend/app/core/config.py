@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     API_SERVER_PROJECT_NAME: str
     ENVIRONMENT: str
     API_PREFIX: str
+    MARIADB_SERVER: str
     MARIADB_DATABASE: str
     MARIADB_USER: str
     MARIADB_PASSWORD: str
