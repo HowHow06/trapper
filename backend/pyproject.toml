@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "trapper-backend"
+version = "0.1.0"
+description = "Backend API server for Trapper project"
+authors = ["Howard TP055278 <howardlim06@outlook.com>"]
+readme = "README.md"
+packages = [{include = "trapper_backend"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.97.0"
+uvicorn = "^0.22.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
