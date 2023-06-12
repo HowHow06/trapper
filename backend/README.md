@@ -62,3 +62,40 @@ To use the virtual environment in Visual Studio Code, follow these steps:
 2. Get the path to the python in Poetry environment using **`where python`**.
 3. Open the Command Palette in VSCode (**`Ctrl+Shift+P`**), search for "Python: Select Interpreter", and click on it.
 4. Click on "Enter interpreter path" and paste in the path you got from step 2.
+
+---
+
+## Development without Poetry
+
+Poetry might be problematic, can use python virtual environment instead
+
+### Installing and Running the Project
+
+Follow these steps to setup and run the project:
+
+1. Setup a Python virtual environment:
+
+```bash
+python -m venv venv
+```
+
+2. Activate the virtual environment:
+   The virtual environment will only be activated for the current terminal session. Need to run this command everytime you reopen this project in terminal.
+
+```bash
+venv\Scripts\activate # or source venv/bin/activate in Unix
+```
+
+3. Install the dependencies from the requirements.txt file:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. Run the FastAPI server:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Your FastAPI server should now be running at http://localhost:8000. You can access the interactive API documentation at http://localhost:8000/docs.
