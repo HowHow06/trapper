@@ -46,11 +46,11 @@ poetry shell
 Finally, start the FastAPI server with:
 
 ```
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 
 ```
 
-> Note: if you dont want to run the application in poetry shell, use `poetry run uvicorn main:app --reload` instead
+> Note: if you dont want to run the application in poetry shell, use `poetry run uvicorn app.main:app --reload` instead
 
 Your server should now be running at **`http://localhost:8000`**.
 
