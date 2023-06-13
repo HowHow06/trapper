@@ -4,6 +4,7 @@ import jwt
 from app import schemas
 from app.core import auth as AuthHelper
 from app.core.config import settings
+from app.core.utils import OAuth2PasswordBearerWithCookie
 from app.crud import crud_user
 from app.db.session import AsyncSessionLocal
 from app.models import user as UserModel
@@ -12,7 +13,9 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/login")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/login")
+oauth2_scheme = OAuth2PasswordBearerWithCookie(
+    tokenUrl=f"{settings.API_PREFIX}/login")
 
 
 async def get_db() -> Generator:

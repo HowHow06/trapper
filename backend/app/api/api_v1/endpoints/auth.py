@@ -1,7 +1,7 @@
 from app import crud, schemas
 from app.api import deps
 from app.core import auth as AuthHelper
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/login", response_model=schemas.Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(deps.get_db)):
+async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(deps.get_db)):
     # use OAuth2PasswordRequestForm to support authorization in openapi docs
     user = await crud.crud_user.authenticate(
         db, username=form_data.username, password=form_data.password
@@ -19,6 +19,9 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
                             detail="Incorrect username or password")
 
     access_token = AuthHelper.create_access_token(user.id)
+    response.set_cookie(
+        key="access_token", value=f"Bearer {access_token}", httponly=True
+    )
     return {"access_token": access_token, "token_type": "bearer"}
 
 
