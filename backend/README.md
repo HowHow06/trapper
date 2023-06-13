@@ -20,7 +20,6 @@ First, change to the server directory:
 
 ```
 cd backend
-
 ```
 
 ### **Set up the Virtual Environment**
@@ -29,7 +28,6 @@ We use Poetry to manage dependencies and virtual environments. Set up a new envi
 
 ```
 poetry install
-
 ```
 
 ### **Activate the Virtual Environment**
@@ -38,7 +36,12 @@ Activate the virtual environment with:
 
 ```
 poetry shell
+```
 
+### **Initialize the admin user (for first time only)**
+
+```
+python .\prestart_init_db.py
 ```
 
 ### **Run the Application in the Virtual Environment**
@@ -47,7 +50,6 @@ Finally, start the FastAPI server with:
 
 ```
 uvicorn app.main:app --reload
-
 ```
 
 > Note: if you dont want to run the application in poetry shell, use `poetry run uvicorn app.main:app --reload` instead
