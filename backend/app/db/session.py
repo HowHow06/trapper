@@ -12,12 +12,12 @@ def get_async_db_url():
     return f"mysql+aiomysql://{settings.MARIADB_USER}:{settings.MARIADB_PASSWORD}@{settings.MARIADB_SERVER}/{settings.MARIADB_DATABASE}"
 
 
-engine = create_async_engine(
+async_engine = create_async_engine(
     get_async_db_url(), echo=True
 )  # use pymysql when it is sync engine
 
 # Create a sessionmaker
 AsyncSessionLocal = sessionmaker(
-    engine, expire_on_commit=False, class_=AsyncSession)
+    async_engine, expire_on_commit=False, class_=AsyncSession)
 
 # SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
