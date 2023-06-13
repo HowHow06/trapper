@@ -56,10 +56,10 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             return None
         return user
 
-    async def is_active(self, user: User) -> bool:
+    def is_active(self, user: User) -> bool:
         return user.is_active
 
-    async def is_admin(self, user: User) -> bool:
+    def is_admin(self, user: User) -> bool:
         return user.is_admin
 
 
