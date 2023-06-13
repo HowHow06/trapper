@@ -1,11 +1,11 @@
+import asyncio
 import logging
-from sqlalchemy.orm import Session
+
 from app import crud, schemas
 from app.core.config import settings
 from app.db.session import AsyncSessionLocal
 from sqlalchemy.ext.asyncio import AsyncSession
-import asyncio
-
+from sqlalchemy.orm import Session
 
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
 # otherwise, SQL Alchemy might fail to initialize relationships properly
@@ -23,6 +23,7 @@ async def init_db(db: AsyncSession) -> None:
             username=settings.FIRST_SUPERUSER_USERNAME,
             email=settings.FIRST_SUPERUSER_EMAIL,
             password=settings.FIRST_SUPERUSER_PASSWORD,
+            is_admin=True
         )
         user = await crud.crud_user.create(db, obj_in=user_in)
 
