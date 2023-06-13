@@ -23,7 +23,7 @@ const LayoutContainer = styled('div')({
   width: '100%',
 });
 
-export const Layout = withAuthGuard((props) => {
+export const DashboardLayout = withAuthGuard((props) => {
   const { children } = props;
   const pathname = usePathname();
   const [openNav, setOpenNav] = useState(false);
