@@ -1,10 +1,7 @@
+from app.api import deps
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import OperationalError
 from sqlmodel.ext.asyncio.session import AsyncSession
-
-
-from app.api import deps
-
 
 router = APIRouter()
 

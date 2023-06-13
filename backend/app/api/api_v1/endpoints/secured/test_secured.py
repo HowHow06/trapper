@@ -1,9 +1,7 @@
 from app import schemas
 from app.api import deps
-# from core.auth import verify_password, create_access_token
 from app.models import User as UserModel
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
 

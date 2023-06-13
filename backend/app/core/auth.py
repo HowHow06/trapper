@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
-from typing import Any, Union, Optional
+from typing import Any, Optional, Union
 
-from passlib.context import CryptContext
 import jwt
-
 from app.core.config import settings
+from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
