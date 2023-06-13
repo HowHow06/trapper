@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic import BaseSettings, EmailStr
 from pathlib import Path
 import secrets
 import os
@@ -16,6 +16,10 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     ACCESS_TOKEN_SECRET_KEY: str = secrets.token_urlsafe(32)
+
+    FIRST_SUPERUSER_EMAIL: EmailStr
+    FIRST_SUPERUSER_USERNAME: str
+    FIRST_SUPERUSER_PASSWORD: str
 
     class Config:
         env_file = '../.env'
