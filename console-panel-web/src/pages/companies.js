@@ -12,7 +12,7 @@ import {
   Typography,
   Unstable_Grid2 as Grid,
 } from '@mui/material';
-import { DashboardLayout } from 'src/layouts/dashboard/layout';
+import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
 import { CompanyCard } from 'src/sections/companies/company-card';
 import { CompaniesSearch } from 'src/sections/companies/companies-search';
 
