@@ -1,10 +1,6 @@
-import datetime
-
-from sqlmodel import SQLModel, Field
-from passlib.hash import bcrypt
-from pydantic import EmailStr
-
 from app.models import TimestampModel
+from pydantic import EmailStr
+from sqlmodel import Field
 
 
 class User(TimestampModel, table=True):  # table=True will use the class name as table name
@@ -12,3 +8,5 @@ class User(TimestampModel, table=True):  # table=True will use the class name as
     username: str = Field(index=True)
     hashed_password: str
     email: EmailStr
+    is_admin: bool = Field(default=False)
+    is_active: bool = Field(default=True)
