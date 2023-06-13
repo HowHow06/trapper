@@ -1,5 +1,6 @@
 from pydantic import BaseSettings
 from pathlib import Path
+import secrets
 import os
 
 
@@ -12,6 +13,9 @@ class Settings(BaseSettings):
     MARIADB_DATABASE: str
     MARIADB_USER: str
     MARIADB_PASSWORD: str
+
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    ACCESS_TOKEN_SECRET_KEY: str = secrets.token_urlsafe(32)
 
     class Config:
         env_file = '../.env'
