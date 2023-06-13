@@ -1,46 +1,48 @@
 from typing import Generator
 
+import jwt
+from app import schemas
+from app.core import auth as AuthHelper
+from app.core.config import settings
+from app.crud import crud_user
+from app.db.session import AsyncSessionLocal
+from app.models import user as UserModel
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-# from jose import jwt
-# from pydantic import ValidationError
-# from sqlalchemy.orm import Session
+from pydantic import ValidationError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-# from app import crud, models, schemas
-# from app.core import security
-from app.core.config import settings
-from app.db.session import AsyncSessionLocal
-
-# reusable_oauth2 = OAuth2PasswordBearer(
-#     tokenUrl=f"{settings.API_PREFIX}/login/access-token"
-# )
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/login")
 
 
-def get_db() -> Generator:
+async def get_db() -> Generator:
+    # async with AsyncSessionLocal() as session:
+    #     yield session
+    db = AsyncSessionLocal()
     try:
-        db = AsyncSessionLocal()
         yield db
     finally:
-        db.close()
+        await db.close()
 
 
-# def get_current_user(
-#     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
-# ) -> models.User:
-#     try:
-#         payload = jwt.decode(
-#             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
-#         )
-#         token_data = schemas.TokenPayload(**payload)
-#     except (jwt.JWTError, ValidationError):
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="Could not validate credentials",
-#         )
-#     user = crud.user.get(db, id=token_data.sub)
-#     if not user:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return user
+async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme)) -> UserModel:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, settings.ACCESS_TOKEN_SECRET_KEY,
+                             algorithms=[AuthHelper.ALGORITHM])
+        # **payload is used to unpack the payload dictionary and pass its key-value pairs as keyword arguments to the constructor.
+        token_data = schemas.TokenPayload(**payload)
+    except (jwt.JWTError, ValidationError):
+        raise credentials_exception
+    user_id = token_data.sub
+    user = await crud_user.get(db, id=user_id)
+    if user is None:
+        raise credentials_exception
+    return user
 
 
 # def get_current_active_user(
