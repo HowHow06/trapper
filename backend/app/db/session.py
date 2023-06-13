@@ -13,7 +13,7 @@ def get_async_db_url():
 
 
 async_engine = create_async_engine(
-    get_async_db_url(), echo=True
+    get_async_db_url(), echo=settings.ENVIRONMENT == "dev"
 )  # use pymysql when it is sync engine
 
 # Create a sessionmaker
