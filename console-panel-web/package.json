@@ -1,9 +1,8 @@
 {
-  "name": "material-kit-react",
+  "name": "trapper-web-console-panel",
   "version": "3.0.0",
-  "author": "Devias",
+  "author": "Howard Lim TP055278",
   "licence": "MIT",
-  "homepage": "https://devias.io",
   "private": false,
   "scripts": {
     "dev": "next",
@@ -11,7 +10,8 @@
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
-    "lint-fix": "next lint --fix"
+    "lint-fix": "next lint --fix",
+    "prettier": "prettier --write **/*.{js,jsx,ts,tsx,json,css,scss,md}"
   },
   "dependencies": {
     "@emotion/cache": "11.10.5",
@@ -42,6 +42,7 @@
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "eslint": "8.34.0",
-    "eslint-config-next": "13.1.6"
+    "eslint-config-next": "13.1.6",
+    "prettier": "^2.8.8"
   }
 }
