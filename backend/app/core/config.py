@@ -1,7 +1,8 @@
-from pydantic import BaseSettings, EmailStr
-from pathlib import Path
-import secrets
 import os
+import secrets
+from pathlib import Path
+
+from pydantic import BaseSettings, EmailStr
 
 
 class Settings(BaseSettings):
@@ -22,7 +23,8 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str
 
     class Config:
-        env_file = '../.env'
+        env_file = Path(__file__).resolve().parent.parent.parent.parent / \
+            ".env"  # get absolute path
         env_file_encoding = 'utf-8'
 
 
