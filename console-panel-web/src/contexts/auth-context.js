@@ -49,11 +49,13 @@ const handlers = {
   },
 };
 
-const reducer = (state, action) =>
-  handlers[action.type] ? handlers[action.type](state, action) : state;
+const reducer = (state, action) => {
+  return handlers[action.type] ? handlers[action.type](state, action) : state;
+};
 
 // The role of this context is to propagate authentication state through the App tree.
 
+// initially is undefined, see AuthContext.Provider below to see the value
 export const AuthContext = createContext({ undefined });
 
 export const AuthProvider = (props) => {
