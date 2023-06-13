@@ -1,12 +1,12 @@
 from typing import Optional
+
+from app.core.auth import get_password_hash, verify_password
+from app.crud.base import CRUDBase
+from app.models import User
+from app.schemas.user import UserCreate, UserUpdate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.models import User
-
-from app.crud.base import CRUDBase
-from app.core.auth import get_password_hash, verify_password
-from app.schemas.user import UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -33,6 +33,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             username=obj_in.username,
+            is_admin=obj_in.is_admin,
         )
         db.add(db_obj)
         await db.commit()
@@ -54,6 +55,12 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         if not verify_password(password, user.hashed_password):
             return None
         return user
+
+    async def is_active(self, user: User) -> bool:
+        return user.is_active
+
+    async def is_admin(self, user: User) -> bool:
+        return user.is_admin
 
 
 crud_user = CRUDUser(User)

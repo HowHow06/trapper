@@ -3,18 +3,12 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
-class UserAuth(BaseModel):
-    username: str
-    password: str
-
-
 # Shared properties
 class UserBase(BaseModel):
     username: str
     email: Optional[EmailStr]
-    # username: Optional[str] = None
-    # is_active: Optional[bool] = True
-    # is_superuser: bool = False
+    is_active: Optional[bool] = True
+    is_admin: bool = False
 
 
 # Properties to receive via API on creation
@@ -31,17 +25,14 @@ class UserUpdate(UserBase):
 class UserInDBBase(UserBase):
     id: Optional[int] = None
 
-    class Config:
-        orm_mode = True
-
-# Additional properties stored in DB
+    class Config:  # A special class that is used to configure the behavior of the Pydantic model
+        orm_mode = True  # A configuration option for Pydantic that enables ORM mode, able to read the data directly from SQLAlchemy models, mainly to validate the response model
 
 
-class UserInDB(UserInDBBase):
-    hashed_password: str
-
-# Additional properties to return via API
-
-
+# Properties to return to client as response
 class User(UserInDBBase):
     pass
+
+# # Properties properties stored in DB
+# class UserInDB(UserInDBBase):
+#     hashed_password: str
