@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     ACCESS_TOKEN_SECRET_KEY: str = secrets.token_urlsafe(32)
+    COOKIE_MAX_AGE_IN_MS: int
 
     FIRST_SUPERUSER_EMAIL: EmailStr
     FIRST_SUPERUSER_USERNAME: str
