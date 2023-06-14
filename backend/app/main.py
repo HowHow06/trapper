@@ -1,7 +1,7 @@
-from fastapi import FastAPI
-# from starlette.middleware.cors import CORSMiddleware
 from app.api.api_v1.api import api_router
 from app.core.config import settings
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title=settings.API_SERVER_PROJECT_NAME, openapi_url=f"{settings.API_PREFIX}/openapi.json"
@@ -17,6 +17,15 @@ app = FastAPI(
 #         allow_methods=["*"],
 #         allow_headers=["*"],
 #     )
+
+if settings.ENVIRONMENT == "dev":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.get("/")
