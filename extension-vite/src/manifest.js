@@ -34,5 +34,5 @@ export default defineManifest({
     },
   ],
   permissions: [],
-  // host_permissions: ["http://localhost:3000/", "http://localhost:8000/"],
+  // host_permissions: ["http://localhost:3000/", "http://localhost:8000/"], // uncomment this if extension fail to send HTTP-only cookie along with the api calls
 })
