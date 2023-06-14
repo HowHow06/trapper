@@ -1,7 +1,11 @@
 import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
+import api from '../api';
+import { isApiSuccess } from 'src/utils/api-call';
+import { DEFAULT } from 'src/constants/variables';
+import logger from 'src/utils/logger';
 
-const HANDLERS = {
+const HANDLERS_ACTION_TYPES = {
   INITIALIZE: 'INITIALIZE',
   SIGN_IN: 'SIGN_IN',
   SIGN_OUT: 'SIGN_OUT',
@@ -14,7 +18,7 @@ const initialState = {
 };
 
 const handlers = {
-  [HANDLERS.INITIALIZE]: (state, action) => {
+  [HANDLERS_ACTION_TYPES.INITIALIZE]: (state, action) => {
     const user = action.payload;
 
     return {
@@ -31,7 +35,7 @@ const handlers = {
           }),
     };
   },
-  [HANDLERS.SIGN_IN]: (state, action) => {
+  [HANDLERS_ACTION_TYPES.SIGN_IN]: (state, action) => {
     const user = action.payload;
 
     return {
@@ -40,7 +44,7 @@ const handlers = {
       user,
     };
   },
-  [HANDLERS.SIGN_OUT]: (state) => {
+  [HANDLERS_ACTION_TYPES.SIGN_OUT]: (state) => {
     return {
       ...state,
       isAuthenticated: false,
@@ -62,6 +66,7 @@ export const AuthProvider = (props) => {
   const { children } = props;
   const [state, dispatch] = useReducer(reducer, initialState);
   const initialized = useRef(false);
+  logger.debug('user state from auth-context:', state?.user);
 
   const initialize = async () => {
     // Prevent from calling twice in development mode with React.StrictMode enabled
@@ -70,30 +75,34 @@ export const AuthProvider = (props) => {
     }
 
     initialized.current = true;
-
     let isAuthenticated = false;
 
-    try {
-      isAuthenticated = window.sessionStorage.getItem('authenticated') === 'true';
-    } catch (err) {
-      console.error(err);
+    const response = await api.testToken();
+    if (isApiSuccess(response)) {
+      logger.debug('Legit User!', response.data);
+      isAuthenticated = true;
+    } else {
+      logger.debug('Test Token failed', response.error);
     }
 
     if (isAuthenticated) {
+      const userInfo = response.data;
       const user = {
-        id: '5e86809283e28b96d2d38537',
-        avatar: '/assets/avatars/avatar-anika-visser.png',
-        name: 'Anika Visser',
-        email: 'anika.visser@devias.io',
+        id: userInfo.id,
+        avatar: DEFAULT.AVATAR,
+        username: userInfo.username,
+        email: userInfo.email,
+        isActive: userInfo.is_active,
+        isAdmin: userInfo.is_admin,
       };
 
       dispatch({
-        type: HANDLERS.INITIALIZE,
+        type: HANDLERS_ACTION_TYPES.INITIALIZE,
         payload: user,
       });
     } else {
       dispatch({
-        type: HANDLERS.INITIALIZE,
+        type: HANDLERS_ACTION_TYPES.INITIALIZE,
       });
     }
   };
@@ -106,57 +115,61 @@ export const AuthProvider = (props) => {
     []
   );
 
-  const skip = () => {
-    try {
-      window.sessionStorage.setItem('authenticated', 'true');
-    } catch (err) {
-      console.error(err);
+  const signIn = async (username, password) => {
+    let response = await api.login({
+      username,
+      password,
+    });
+
+    if (isApiSuccess(response)) {
+      logger.debug('Login succeeded', response.data);
+    } else {
+      logger.debug('Login failed', response.error);
+      return response;
     }
 
+    response = await api.testToken();
+    if (!isApiSuccess(response)) {
+      logger.debug('Login Token failed', response.error);
+      return response;
+    }
+
+    const userInfo = response.data;
+
     const user = {
-      id: '5e86809283e28b96d2d38537',
-      avatar: '/assets/avatars/avatar-anika-visser.png',
-      name: 'Anika Visser',
-      email: 'anika.visser@devias.io',
+      id: userInfo.id,
+      avatar: DEFAULT.AVATAR,
+      username: userInfo.username,
+      email: userInfo.email,
+      isActive: userInfo.is_active,
+      isAdmin: userInfo.is_admin,
     };
 
     dispatch({
-      type: HANDLERS.SIGN_IN,
+      type: HANDLERS_ACTION_TYPES.SIGN_IN,
       payload: user,
     });
-  };
 
-  const signIn = async (email, password) => {
-    if (email !== 'demo@devias.io' || password !== 'Password123!') {
-      throw new Error('Please check your email and password');
-    }
-
-    try {
-      window.sessionStorage.setItem('authenticated', 'true');
-    } catch (err) {
-      console.error(err);
-    }
-
-    const user = {
-      id: '5e86809283e28b96d2d38537',
-      avatar: '/assets/avatars/avatar-anika-visser.png',
-      name: 'Anika Visser',
-      email: 'anika.visser@devias.io',
-    };
-
-    dispatch({
-      type: HANDLERS.SIGN_IN,
-      payload: user,
-    });
+    return response;
   };
 
   const signUp = async (email, name, password) => {
     throw new Error('Sign up is not implemented');
   };
 
-  const signOut = () => {
+  const signOut = async () => {
+    const response = await api.logout();
+
+    if (isApiSuccess(response)) {
+      // Successful response
+      logger.debug('Logout succeeded', response.data);
+    } else {
+      logger.debug('Logout failed', response.error);
+      return;
+    }
+
     dispatch({
-      type: HANDLERS.SIGN_OUT,
+      type: HANDLERS_ACTION_TYPES.SIGN_OUT,
     });
   };
 
@@ -164,7 +177,6 @@ export const AuthProvider = (props) => {
     <AuthContext.Provider
       value={{
         ...state,
-        skip,
         signIn,
         signUp,
         signOut,
