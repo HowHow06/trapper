@@ -2,6 +2,7 @@ import { apiCall } from 'src/utils/api-call';
 
 export default function Auth(api) {
   const login = async ({ username, password }) => {
+    // this login api uses HTTP-only cookie, cookie will be set automatically when the response reaches the browser
     const params = new URLSearchParams();
     params.append('username', username);
     params.append('password', password);
