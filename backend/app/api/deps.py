@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/login")
 oauth2_scheme = OAuth2PasswordBearerWithCookie(
-    tokenUrl=f"{settings.API_PREFIX}/login")
+    tokenUrl=f"{settings.API_PREFIX}/auth/login")
 
 
 async def get_db() -> Generator:
@@ -39,7 +39,8 @@ async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Depe
                              algorithms=[AuthHelper.ALGORITHM])
         # **payload is used to unpack the payload dictionary and pass its key-value pairs as keyword arguments to the constructor.
         token_data = schemas.TokenPayload(**payload)
-    except (jwt.JWTError, ValidationError):
+    except (jwt.PyJWTError, ValidationError) as error:
+        print(error)
         raise credentials_exception
     user_id = token_data.sub
     user = await crud_user.get(db, id=user_id)
