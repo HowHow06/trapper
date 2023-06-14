@@ -18,5 +18,6 @@ cd "C:\Program Files\Docker\Docker" ; ./DockerCli.exe -SwitchDaemon
 > Can add `-d` flag if you want
 
 ```bash
+docker compose build extension-app-dev
 docker compose up extension-app-dev
 ```
