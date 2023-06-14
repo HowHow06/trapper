@@ -4,7 +4,7 @@ export default defineManifest({
   name: 'Trapper Client',
   description:
     'A chrome extension for scanning XSS vulnerability, as a client for the trapper project.',
-  version: '0.1.0',
+  version: '0.1.1',
   manifest_version: 3,
   icons: {
     16: 'img/logo-16.png',
