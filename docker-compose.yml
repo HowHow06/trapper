@@ -17,7 +17,7 @@ services:
     ports:
       - 3306:3306
 
-  extension-app:
+  extension-app-dev:
     build:
       context: .
       dockerfile: ./.docker/extension-vite/Dockerfile
