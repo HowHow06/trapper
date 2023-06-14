@@ -56,7 +56,7 @@ export const Layout = (props) => {
           lg={6}
           sx={{
             alignItems: 'center',
-            background: 'radial-gradient(50% 50% at 50% 50%, #122647 0%, #090E23 100%)',
+            background: 'radial-gradient(50% 50% at 50% 50%, #182e53 0%, #090E23 100%)',
             color: 'white',
             display: 'flex',
             justifyContent: 'center',
@@ -78,13 +78,13 @@ export const Layout = (props) => {
             >
               Welcome to{' '}
               <Box component="a" sx={{ color: '#15B79E' }} target="_blank">
-                Devias Kit
+                Trapper
               </Box>
             </Typography>
             <Typography align="center" sx={{ mb: 3 }} variant="subtitle1">
-              A professional kit that comes with ready-to-use MUI components.
+              A professional tool to detect XSS vulnerabilities.
             </Typography>
-            <img alt="" src="/assets/auth-illustration.svg" />
+            <img alt="" src="/assets/xss-illustration.png" />
           </Box>
         </Grid>
       </Grid>
