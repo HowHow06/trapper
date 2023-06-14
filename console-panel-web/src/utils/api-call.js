@@ -8,3 +8,12 @@ export const apiCall = async ({ axiosInstance, url, params = null, options = {} 
     return { success: false, error: error };
   }
 };
+
+export const isApiSuccess = (response) => {
+  return response.status >= 200 && response.status < 300 && response.success;
+};
+
+export const getErrorMessageFromResponse = (response) => {
+  const errorObject = response.error;
+  return errorObject.response?.data?.detail ?? errorObject.message;
+};
