@@ -8,11 +8,23 @@ services:
     image: mariadb
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MARIADB_DATABASE}
+      MYSQL_USER: ${MARIADB_USER}
+      MYSQL_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
       - data:/var/lib/mysql
     ports:
       - 3306:3306
+
+  extension-app:
+    build:
+      context: .
+      dockerfile: ./.docker/extension-vite/Dockerfile
+    volumes:
+      - ./extension-vite:/app
+      - /app/node_modules # create a volume, so no need to reinstall the node modules
+    ports:
+      - ${VITE_DEV_PORT}:5000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
