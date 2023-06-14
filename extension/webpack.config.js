@@ -99,9 +99,9 @@ var options = {
             loader: require.resolve('ts-loader'),
             options: {
               getCustomTransformers: () => ({
-                before: [isDevelopment && ReactRefreshTypeScript()].filter(
-                  Boolean
-                ), // use fast refresh when is development
+                before: [
+                  isDevelopment && ReactRefreshTypeScript({ overlay: false }),
+                ].filter(Boolean), // use fast refresh when is development
               }),
               transpileOnly: isDevelopment,
             },
