@@ -24,7 +24,7 @@ export default defineManifest({
   content_scripts: [
     {
       matches: ['http://*/*', 'https://*/*'],
-      js: ['src/content/index.js'],
+      js: ['src/content/index.js'], // can change to jsx when needed
     },
   ],
   web_accessible_resources: [

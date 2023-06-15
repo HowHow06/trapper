@@ -1,3 +1,3 @@
-console.info('chrome-ext template-react-js background script')
+console.info('Trapper Client Loaded>>')
 
 export {}
