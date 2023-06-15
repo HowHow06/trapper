@@ -107,10 +107,9 @@ function App() {
             direction="horizontal"
             gap={2}
             className="w-100 justify-content-center on-hover-pointer"
+            onClick={handleSettingClick}
           >
-            <p onClick={handleSettingClick} className="m-0">
-              Go to settings
-            </p>
+            <p className="m-0">Go to settings</p>
             <ArrowUpRight height="0.8rem" />
           </Stack>
         </div>
