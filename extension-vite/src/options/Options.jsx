@@ -1,18 +1,22 @@
 import { useFormik } from 'formik'
-import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap'
+import { Button, Card, Col, Container, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import * as Yup from 'yup'
+import { CircleQuestion } from '../components/Svg'
 import './Options.css'
 
 function App() {
+  const isNewTask = true // TODO: check if is new task
   const formik = useFormik({
     initialValues: {
       taskName: '',
-      urlRegex: '',
+      urlRule: '',
       email: '',
     },
     validationSchema: Yup.object({
       taskName: Yup.string().max(255).required('Task name is required'),
-      urlRegex: Yup.string().max(255).required('URL Regex is required'),
+      urlRule: Yup.string()
+        .max(100, 'Maximum length is 100 characters')
+        .required('URL Rule is required'),
       email: Yup.string().email('Invalid email format').max(255),
     }),
     onSubmit: async (values, helpers) => {
@@ -21,7 +25,12 @@ function App() {
     },
   })
 
-  const isNewTask = true // TODO: check if is new task
+  const renderURLTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      You can use the asterisk (*) in any URL segment to match certain patterns. For example,
+      http://*.example.com/*
+    </Tooltip>
+  )
 
   return (
     <main>
@@ -85,20 +94,28 @@ function App() {
               </Form.Group>
               <Form.Group as={Row} className="mb-3" controlId="formHorizontalURL">
                 <Form.Label column sm={2}>
-                  URL Regex
+                  URL
+                  <OverlayTrigger
+                    // placement="right"
+                    overlay={renderURLTooltip}
+                  >
+                    <div className="d-inline-flex mx-1">
+                      <CircleQuestion height="0.9rem" />
+                    </div>
+                  </OverlayTrigger>
                 </Form.Label>
                 <Col sm={10}>
                   <Form.Control
                     type="text"
                     placeholder="http://xxx.xx.com/*"
-                    name="urlRegex"
-                    value={formik.values.urlRegex}
+                    name="urlRule"
+                    value={formik.values.urlRule}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    isInvalid={formik.touched.urlRegex && !!formik.errors.urlRegex}
+                    isInvalid={formik.touched.urlRule && !!formik.errors.urlRule}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {formik.errors.urlRegex}
+                    {formik.errors.urlRule}
                   </Form.Control.Feedback>
                 </Col>
               </Form.Group>
