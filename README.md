@@ -19,5 +19,6 @@ cd "C:\Program Files\Docker\Docker" ; ./DockerCli.exe -SwitchDaemon
 
 ```bash
 docker compose build extension-app-dev
+docker compose build extension-app-dev --no-cache
 docker compose up extension-app-dev
 ```
