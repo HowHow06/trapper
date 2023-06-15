@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
 // Override default variables before the import
 // $body-bg: #e6e6e6;
 $primary: #2d72da;
@@ -28,4 +30,21 @@ main {
 
 .form-control {
   background-color: $white;
+}
+
+.text-logo {
+  font-family: 'Quicksand', sans-serif;
+  // color: #6ea7db;
+}
+
+.on-hover-pointer {
+  cursor: pointer;
+}
+
+.icon-btn {
+  margin: 0 0 0.2rem 0;
+}
+
+.text-label {
+  font-size: 0.9rem;
 }
