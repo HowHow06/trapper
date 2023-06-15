@@ -1,24 +1,13 @@
-import { useEffect, useState } from 'react';
+import { Box, Button, Link, Stack, TextField, Typography } from '@mui/material';
+import { useFormik } from 'formik';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import {
-  Alert,
-  Box,
-  Button,
-  FormHelperText,
-  Link,
-  Stack,
-  Tab,
-  Tabs,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import { useAuth } from 'src/hooks/use-auth';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 import { getErrorMessageFromResponse } from 'src/utils/api-call';
-import { useRouter } from 'next/router';
+import * as Yup from 'yup';
 
 const Page = () => {
   const router = useRouter();
