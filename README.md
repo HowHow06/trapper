@@ -21,4 +21,9 @@ cd "C:\Program Files\Docker\Docker" ; ./DockerCli.exe -SwitchDaemon
 docker compose build extension-app-dev
 docker compose build extension-app-dev --no-cache
 docker compose up extension-app-dev
+docker compose exec extension-app-dev yarn add formik
+
+
+docker compose stop extension-app-dev
+docker compose rm -v extension-app-dev
 ```
