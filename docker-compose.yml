@@ -30,3 +30,26 @@ services:
       - CHOKIDAR_USEPOLLING=true
     env_file:
       - ./.env
+
+  queue:
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    ports: # even without the ports, by default will expose 5672 and 15672
+      - 5672:5672 # queue
+      - 15672:15672 # admin panel
+
+
+  # flower:
+  #   image: mher/flower
+  #   depends_on:
+  #     - queue
+  #   networks:
+  #     - default
+  #   env_file:
+  #     - ./.env
+  #   command:
+  #     - "--broker=amqp://guest@queue:5672//"
+  #   ports:
+  #     - 5555:5555
