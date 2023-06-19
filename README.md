@@ -16,6 +16,7 @@ cd "C:\Program Files\Docker\Docker" ; ./DockerCli.exe -SwitchDaemon
 ```
 
 > Can add `-d` flag if you want
+> Must use docker, because the env file is imported into docker and used by the app
 
 ```bash
 docker compose build extension-app-dev
