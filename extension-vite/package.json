@@ -21,6 +21,7 @@
     "fmt": "prettier --write '**/*.{jsx,js,json,css,scss,md}'"
   },
   "dependencies": {
+    "axios": "^1.4.0",
     "bootstrap": "^5.3.0",
     "formik": "^2.4.2",
     "react": "^18.2.0",
