@@ -48,9 +48,11 @@ services:
       - ./.env
     command: [
         "celery",
-        "--broker=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@queue:5672//",
         "flower",
         "--broker_api=http://${RABBITMQ_USER}:${RABBITMQ_PASS}@queue:15672/api//",
       ] # the `@queue` here is network of queue service, cannot use @localhost in docker container
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@queue:5672//
+      # - CELERY_RESULT_BACKEND=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@queue:5672//
     ports:
       - 5555:5555
