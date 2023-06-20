@@ -34,6 +34,8 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
+    CELERY_BROKER_URL: str
+
     class Config:
         env_file = Path(__file__).resolve().parent.parent.parent.parent / \
             ".env"  # get absolute path
