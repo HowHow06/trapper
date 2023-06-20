@@ -47,11 +47,13 @@ create_rabbitmq_exchange() {
 create_rabbitmq_queues() {
   echo "[Entrypoint] Creating RabbitMQ queues..."
   rabbitmqadmin -u $username -p $password declare queue name=trapper-xsstrike
+  # rabbitmqadmin -u $username -p $password declare queue name=trapper-xsstrike-test # for testing fanout exchange, it works
 }
 
 bind_rabbitmq_exchange() {
   echo "[Entrypoint] Binding RabbitMQ exchange to queue..."
   rabbitmqadmin -u $username -p $password declare binding source=trapper_fanout_exchange destination=trapper-xsstrike
+  # rabbitmqadmin -u $username -p $password declare binding source=trapper_fanout_exchange destination=trapper-xsstrike-test  # for testing fanout exchange, it works
 
 }
 
