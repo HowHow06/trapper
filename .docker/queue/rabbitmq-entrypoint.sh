@@ -34,7 +34,7 @@ create_rabbitmq_admin_account() {
 # Function to enable rabbitmq plugins
 enable_rabbitmq_plugins() {
   echo "[Entrypoint] Enabling RabbitMQ plugins..."
-  #   rabbitmq-plugins enable --offline rabbitmq_management # macam not needed
+  #   rabbitmq-plugins enable --offline rabbitmq_management # macam not needed because the image itself has this enabled
 }
 
 create_rabbitmq_exchange() {

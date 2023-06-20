@@ -9,6 +9,14 @@ celery_app = Celery("worker", broker=settings.CELERY_BROKER_URL)
 # https://docs.celeryq.dev/en/stable/userguide/routing.html
 celery_app.conf.worker_prefetch_multiplier = 1
 celery_app.conf.consumer_timeout = 40
+celery_app.conf.task_serializer = 'json'
+celery_app.conf.result_serializer = 'json'
+celery_app.conf.accept_content = ['json']
+celery_app.conf.timezone = 'UTC'
+celery_app.conf.enable_utc = True
+# If task_acks_late is set to True, tasks will be acknowledged after they have been executed, not just when they have been received.
+# This means that if a worker crashes while executing a task, the task will be returned to the queue and can be picked up by another worker.
+celery_app.conf.task_acks_late = True
 
 # declared in rabbitmq server using entrypoint script
 trapper_default_exchange = Exchange('trapper_fanout_exchange', type='fanout')
@@ -20,9 +28,8 @@ celery_app.conf.task_queues = {
     Queue('trapper-xsstrike', trapper_default_exchange),
 }
 
-# celery_app.conf.default_exchange = 'trapper_fanout_exchange'
-
-# since the queue is bound to the fanout exchange, no need to declare task route
+# since the queue is bound to the fanout exchange,
+# the same message will also be sent to any queue bound to the same exchange
 celery_app.conf.task_routes = {
     "app.worker.*": {'queue': 'trapper-xsstrike'}
 }

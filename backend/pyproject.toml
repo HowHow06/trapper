@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Backend API server for Trapper project"
 authors = ["Howard TP055278 <howardlim06@outlook.com>"]
 readme = "README.md"
-packages = [{include = "trapper_backend"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

@@ -1,3 +1,4 @@
+import os
 import secrets
 from pathlib import Path
 from typing import List, Union
@@ -37,11 +38,15 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str
 
     class Config:
-        env_file = Path(__file__).resolve().parent.parent.parent.parent / \
-            ".env"  # get absolute path
+        # env_file = Path(__file__).resolve().parent.parent.parent.parent / \
+        #     ".env"  # get absolute path
         env_file_encoding = 'utf-8'
 
 
-dev_path = Path(__file__).resolve().parent.parent.parent.parent / \
-    ".env"  # get absolute path
-settings = Settings(_env_file=dev_path, _env_file_encoding='utf-8')
+current_environment = os.getenv("CURRENT_ENVIRONMENT", "")
+if current_environment != 'DOCKER':
+    dev_path = Path(__file__).resolve().parent.parent.parent.parent / \
+        ".env"  # get absolute path
+    settings = Settings(_env_file=dev_path, _env_file_encoding='utf-8')
+else:
+    settings = Settings()  # get value from OS environment variables
