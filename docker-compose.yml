@@ -65,6 +65,9 @@ services:
 
   celery-worker:
     image: "celery-worker-image" # just image name
+    depends_on:
+      - db
+      - queue
     build:
       context: .
       dockerfile: ./.docker/celery-worker/Dockerfile
