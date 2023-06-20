@@ -101,3 +101,21 @@ uvicorn app.main:app --reload
 ```
 
 Your FastAPI server should now be running at http://localhost:8000. You can access the interactive API documentation at http://localhost:8000/docs.
+
+---
+
+To run celery worker in poetry shell:
+
+`-A` specify the file
+`-l` specify log level
+`-Q` specify the queue
+`worker` tells Celery to start a worker process.
+`-c` specify the concurrency level for the worker to 1. It defines the number of worker processes that will be spawned to process tasks concurrently. In this case, only one worker process will be created.
+`-P solo` is to solve issue of Celery on windows, can remove this option in linux / mac
+
+> Problem with celery on windows, must add -P solo: https://github.com/celery/celery/issues/3759#issuecomment-573294590
+
+```bash
+celery -A app.worker worker -l debug -c 1
+poetry run celery -A app.worker worker -l info -c 1 -P solo
+```
