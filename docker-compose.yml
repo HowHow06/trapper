@@ -32,13 +32,18 @@ services:
       - ./.env
 
   queue:
-    image: rabbitmq:3-management
+    env_file:
+      - ./.env
+    build:
+      context: ./.docker/queue # will use this directory, and find Dockerfile there
+    ports:
+      - "5672:5672" # RabbitMQ
+      - "15672:15672" # management interface
     environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
-    ports: # even without the ports, by default will expose 5672 and 15672
-      - 5672:5672 # queue
-      - 15672:15672 # admin panel
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_DEFAULT_VHOST: "/"
+    command: ${RABBITMQ_ADMIN_USER} ${RABBITMQ_ADMIN_PASS} # pass this to entrypoint script to create admin account
 
   flower:
     image: mher/flower
