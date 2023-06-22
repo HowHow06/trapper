@@ -1,11 +1,11 @@
 import copy
-from fuzzywuzzy import fuzz
 import re
 from urllib.parse import unquote
 
 from core.config import xsschecker
 from core.requester import requester
-from core.utils import replaceValue, fillHoles
+from core.utils import fillHoles, fillHoles2, replaceValue
+from fuzzywuzzy import fuzz
 
 
 def checker(url, params, headers, GET, delay, payload, positions, timeout, encoding):
@@ -17,24 +17,25 @@ def checker(url, params, headers, GET, delay, payload, positions, timeout, encod
     reflectedPositions = []
     for match in re.finditer('st4r7s', response):
         reflectedPositions.append(match.start())
-    filledPositions = fillHoles(positions, reflectedPositions)
-    #  Itretating over the reflections
+    # TRAPPER: Only call fillHoles if there are missing or extra reflected positions
+    if len(reflectedPositions) != len(positions):
+        filledPositions = fillHoles2(positions, reflectedPositions)
+    else:
+        # No need to fill holes, reflectedPositions matches expected positions
+        filledPositions = list(reflectedPositions)
+    # Itretating over the reflections
     num = 0
     efficiencies = []
     for position in filledPositions:
         allEfficiencies = []
-        try:
-            reflected = response[reflectedPositions[num]
-                :reflectedPositions[num]+len(checkString)]
-            efficiency = fuzz.partial_ratio(reflected, checkString.lower())
-            allEfficiencies.append(efficiency)
-        except IndexError:
-            pass
+        # TRAPPER: removed the part where it uses the reflectedPositions, which does not make sense
         if position:
             reflected = response[position:position+len(checkString)]
             if encoding:
                 checkString = encoding(checkString.lower())
-            efficiency = fuzz.partial_ratio(reflected, checkString)
+            # TRAPPER: added `.lower()` here
+            efficiency = fuzz.partial_ratio(
+                reflected.lower(), checkString.lower())
             if reflected[:-2] == ('\\%s' % checkString.replace('st4r7s', '').replace('3nd', '')):
                 efficiency = 90
             allEfficiencies.append(efficiency)
@@ -42,4 +43,5 @@ def checker(url, params, headers, GET, delay, payload, positions, timeout, encod
         else:
             efficiencies.append(0)
         num += 1
-    return list(filter(None, efficiencies))
+    # TRAPPER: removed the part where it removes empty values
+    return list(efficiencies)

@@ -41,7 +41,7 @@ def closest(number, numbers):
     return difference[1]
 
 
-def fillHoles(original, new):
+def fillHoles(original, new):  # change to use the new fillHoles2
     filler = 0
     filled = []
     for x, y in zip(original, new):
@@ -51,6 +51,48 @@ def fillHoles(original, new):
             filled.extend([0, y])
             filler += (int(x) - y)
     return filled
+
+# TRAPPER: new implementation
+
+
+def fillHoles2(original_array, new_array):
+    # Initialize an array with zeros
+    filled_array = [0]*len(original_array)
+
+    for new_num in new_array:
+        # Identify the position of the closest number in the original_array
+        closest_position = find_closest_position(original_array, new_num)
+
+        # Check if the position already has an element in the filled_array
+        if filled_array[closest_position] != 0:
+            # If there is an existing element, compare which number (existing one or new one) is closer to the corresponding number in original_array
+            existing_num = filled_array[closest_position]
+            main_num = original_array[closest_position]
+
+            if abs(main_num - new_num) < abs(main_num - existing_num):
+                # If the new number is closer, update the corresponding position in the filled_array
+                filled_array[closest_position] = new_num
+        else:
+            # If there is no existing element, update the corresponding position in the filled_array
+            filled_array[closest_position] = new_num
+
+
+# TRAPPER: new implementation
+def find_closest_position(array, num):
+    """Finds the index of the number in array that is closest to num"""
+    # equilevant to ----
+    # closest_index = 0
+    # smallest_difference = abs(array[0] - num)
+
+    # for i in range(1, len(array)):
+    #     difference = abs(array[i] - num)
+    #     if difference < smallest_difference:
+    #         smallest_difference = difference
+    #         closest_index = i
+
+    # return closest_index
+    # ---
+    return min(range(len(array)), key=lambda index: abs(array[index]-num))
 
 
 def stripper(string, substring, direction='right'):
@@ -203,13 +245,15 @@ def writer(obj, path):
 def reader(path):
     with open(path, 'r') as f:
         result = [line.rstrip(
-                    '\n').encode('utf-8').decode('utf-8') for line in f]
+            '\n').encode('utf-8').decode('utf-8') for line in f]
     return result
+
 
 def js_extractor(response):
     """Extract js files from the response body"""
     scripts = []
-    matches = re.findall(r'<(?:script|SCRIPT).*?(?:src|SRC)=([^\s>]+)', response)
+    matches = re.findall(
+        r'<(?:script|SCRIPT).*?(?:src|SRC)=([^\s>]+)', response)
     for match in matches:
         match = match.replace('\'', '').replace('"', '').replace('`', '')
         scripts.append(match)
@@ -240,6 +284,7 @@ def deJSON(data):
 def getVar(name):
     return core.config.globalVariables[name]
 
+
 def updateVar(name, data, mode=None):
     if mode:
         if mode == 'append':
@@ -249,6 +294,7 @@ def updateVar(name, data, mode=None):
     else:
         core.config.globalVariables[name] = data
 
+
 def isBadContext(position, non_executable_contexts):
     badContext = ''
     for each in non_executable_contexts:
@@ -257,9 +303,11 @@ def isBadContext(position, non_executable_contexts):
             break
     return badContext
 
+
 def equalize(array, number):
     if len(array) < number:
         array.append('')
+
 
 def escaped(position, string):
     usable = string[:position][::-1]

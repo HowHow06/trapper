@@ -18,7 +18,8 @@ def filterChecker(url, params, headers, GET, delay, occurences, timeout, encodin
             environments.add('</scRipT/>')
         elif context == 'attribute':
             if occurences[i]['details']['type'] == 'value':
-                if occurences[i]['details']['name'] == 'srcdoc':  # srcdoc attribute accepts html data with html entity encoding
+                # srcdoc attribute accepts html data with html entity encoding
+                if occurences[i]['details']['name'] == 'srcdoc':
                     environments.add('&lt;')  # so let's add the html entity
                     environments.add('&gt;')  # encoded versions of < and >
             if occurences[i]['details']['quote']:
@@ -27,6 +28,7 @@ def filterChecker(url, params, headers, GET, delay, occurences, timeout, encodin
         if environment:
             efficiencies = checker(
                 url, params, headers, GET, delay, environment, positions, timeout, encoding)
+            # TRAPPER: the line below no longer needed actually, but keep this line for extra checking
             efficiencies.extend([0] * (len(occurences) - len(efficiencies)))
             for occurence, efficiency in zip(occurences, efficiencies):
                 occurences[occurence]['score'][environment] = efficiency
