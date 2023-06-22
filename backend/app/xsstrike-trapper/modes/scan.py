@@ -1,19 +1,19 @@
 import copy
 import re
-from urllib.parse import urlparse, quote, unquote
+from urllib.parse import quote, unquote, urlparse
 
+import core.config
 from core.checker import checker
 from core.colors import end, green, que
-import core.config
-from core.config import xsschecker, minEfficiency
+from core.config import minEfficiency, xsschecker
 from core.dom import dom
 from core.filterChecker import filterChecker
 from core.generator import generator
 from core.htmlParser import htmlParser
-from core.requester import requester
-from core.utils import getUrl, getParams, getVar
-from core.wafDetector import wafDetector
 from core.log import setup_logger
+from core.requester import requester
+from core.utils import getParams, getUrl, getVar
+from core.wafDetector import wafDetector
 
 logger = setup_logger(__name__)
 
