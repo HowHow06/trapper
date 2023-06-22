@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 
-from core.colors import end, red, white, bad, info
+from core.colors import bad, end, info, red, white
 
 # Just a fancy ass banner
 print('''%s
@@ -27,10 +27,10 @@ except ImportError:  # throws error in python2
     print('%s XSStrike isn\'t compatible with python2.\n Use python > 3.4 to run XSStrike.' % bad)
     quit()
 
+import argparse
+import json
 # Let's import whatever we need from standard lib
 import sys
-import json
-import argparse
 
 # ... and configurations core lib
 import core.config
@@ -117,8 +117,7 @@ from core.encoders import base64
 from core.photon import photon
 from core.prompt import prompt
 from core.updater import updater
-from core.utils import extractHeaders, reader, converter
-
+from core.utils import converter, extractHeaders, reader
 from modes.bruteforcer import bruteforcer
 from modes.crawl import crawl
 from modes.scan import scan
