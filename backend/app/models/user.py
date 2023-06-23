@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import List, Optional
 
 from app.models import TimestampModel
 from pydantic import EmailStr
-from sqlmodel import Field
+from sqlmodel import Field, Relationship
 
 
 class User(TimestampModel, table=True):
@@ -12,3 +12,5 @@ class User(TimestampModel, table=True):
     email: EmailStr
     is_admin: bool = Field(default=False)
     is_active: bool = Field(default=True)
+    tasks: Optional[List["Task"]] = Relationship(
+        back_populates="created_by_user")

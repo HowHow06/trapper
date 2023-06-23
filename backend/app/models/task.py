@@ -15,7 +15,5 @@ class Task(TimestampModel, table=True):
     task_name: str = Field(max_length=100)
     access_key: str = Field(max_length=255)
     url_rule: str = Field(max_length=100)
-
-
-Lookup.tasks = Relationship(back_populates="task_status")
-User.tasks = Relationship(back_populates="created_by_user")
+    scan_requests: Optional[List["ScanRequest"]
+                            ] = Relationship(back_populates="task")

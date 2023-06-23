@@ -12,13 +12,9 @@ from sqlmodel import Field, Relationship
 class Result(TimestampModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     request_id: int = Field(foreign_key="scan_request.id")
-    scan_request: Optional[ScanRequest] = Relationship(
+    scan_request: ScanRequest = Relationship(
         back_populates="results")
     vulnerability_id: int = Field(foreign_key="vulnerability.id")
-    vulnerability: Optional[Vulnerability] = Relationship(
+    vulnerability: Vulnerability = Relationship(
         back_populates="results")
     payload: str
-
-
-ScanRequest.results = Relationship(back_populates="scan_request")
-Vulnerability.results = Relationship(back_populates="vulnerability")

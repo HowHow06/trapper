@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from app.models import TimestampModel
 from app.models.lookup import Lookup
@@ -13,7 +13,7 @@ class ScanRequest(TimestampModel, table=True):
     original_request_data: str
     payload: str
     scan_status_id: int = Field(foreign_key="lookup.id")
-    scan_status: Optional[Lookup] = Relationship(
+    scan_status: Lookup = Relationship(
         back_populates="scan_requests")
     request_endpoint: str = Field(max_length=255)
     request_information: str
@@ -21,9 +21,8 @@ class ScanRequest(TimestampModel, table=True):
     start_at: datetime
     end_at: datetime
     task_id: int = Field(foreign_key="task.id")
-    task: Optional[Task] = Relationship(back_populates="scan_requests")
+    task: Task = Relationship(back_populates="scan_requests")
     app_version: str = Field(max_length=20)
-
-
-Task.scan_requests = Relationship(back_populates="task")
-Lookup.scan_requests = Relationship(back_populates="scan_status")
+    result: Optional["Result"] = Relationship(
+        # sa_relationship_kwargs={'uselist': False},
+        back_populates="scan_request")  # one to one
