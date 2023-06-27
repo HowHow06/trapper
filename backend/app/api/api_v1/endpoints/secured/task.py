@@ -1,10 +1,13 @@
+from datetime import datetime
 from typing import Any, List
 
 from app import crud, models, schemas
 from app.api import deps
+from app.core import constants
 from app.models import User as UserModel
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -98,4 +101,45 @@ async def delete_task(
     if (not crud.crud_user.is_admin(current_user)) and (task.created_by_user_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
     task = await crud.crud_task.remove(db=db, id=id)
-    return task
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "Operation successful. Task has been deleted.",
+            "id": id
+        },
+    )
+
+
+@router.post("/{id}/stop-task")
+async def stop_task(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Stop an task.
+    """
+    task = await crud.crud_task.get(db=db, id=id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    if (not crud.crud_user.is_admin(current_user)) and (task.created_by_user_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    if task.task_status_id in [constants.Status.DONE, constants.Status.KILLED]:
+        raise HTTPException(
+            status_code=400, detail="Operation failed. Task is already stopped.")
+
+    task_data = jsonable_encoder(task)
+    task_data["task_status_id"] = constants.Status.KILLED
+    task_data["stopped_at"] = datetime.utcnow()
+
+    obj_in = models.Task(**task_data)
+
+    await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "Operation successful. Task has been stopped."
+        },
+    )
