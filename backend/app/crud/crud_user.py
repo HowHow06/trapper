@@ -11,15 +11,15 @@ from sqlalchemy.future import select
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     async def get_by_username(self, db: AsyncSession, *, username: str) -> User:
-        statement = select(User).filter(User.username == username)
-        result = await db.execute(statement)
+        condition = User.username == username
+        users = await super().get_multi(db, where=condition)
         # scalars is all objects, return the first object; difference with one() is one must return one object only, if have multiple or zero will throw error
-        return result.scalars().first()
+        return users.first()
 
     async def get_by_email(self, db: AsyncSession, *, email: str) -> User:
-        statement = select(User).filter(User.email == email)
-        result = await db.execute(statement)
-        return result.scalars().first()
+        condition = User.email == email
+        users = await super().get_multi(db, where=condition)
+        return users.first()
 
     async def get_by_email_or_username(self, db: AsyncSession, *, email: str,  username: str) -> User:
         user = await self.get_by_username(db, username=username)
@@ -38,6 +38,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         db.add(db_obj)
         await db.commit()
         await db.refresh(db_obj)
+        # did not use create function from super class because User schema is used instead of UserCreate schema, to hide the hashed_password field
         return db_obj
 
     async def update(self, db: AsyncSession, *, db_obj: User, obj_in: UserUpdate) -> User:
