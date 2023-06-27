@@ -7,13 +7,13 @@ from pydantic import BaseModel
 class LookupBase(BaseModel):
     type: Optional[str]
     name: Optional[str]
-    slug: Optional[str]
     description: Optional[str]
 
 # Properties to receive via API on creation
 
 
 class LookupCreate(LookupBase):
+    id: Optional[int]
     type: str
     name: str
 

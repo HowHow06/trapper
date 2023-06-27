@@ -6,22 +6,19 @@ from pydantic import BaseModel
 
 # Shared properties
 class TaskBase(BaseModel):
-    task_status_id: Optional[int]
-    created_by_user_id: Optional[int]
     task_name: Optional[str]
-    access_key: Optional[str]
     url_rule: Optional[str]
 
 
 # Properties to receive via API on creation
 class TaskCreate(TaskBase):
-    created_by_user_id: int
     task_name: str
     url_rule: str
 
 
 # Properties to receive via API on update
 class TaskUpdate(TaskBase):
+    # task_status_id: Optional[int]
     pass
 
 
