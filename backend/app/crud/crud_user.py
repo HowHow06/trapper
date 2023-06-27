@@ -14,12 +14,12 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         condition = User.username == username
         users = await super().get_multi(db, where=condition)
         # scalars is all objects, return the first object; difference with one() is one must return one object only, if have multiple or zero will throw error
-        return users.first()
+        return users[0] if users else None
 
     async def get_by_email(self, db: AsyncSession, *, email: str) -> User:
         condition = User.email == email
         users = await super().get_multi(db, where=condition)
-        return users.first()
+        return users[0] if users else None
 
     async def get_by_email_or_username(self, db: AsyncSession, *, email: str,  username: str) -> User:
         user = await self.get_by_username(db, username=username)
