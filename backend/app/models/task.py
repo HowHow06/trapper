@@ -13,7 +13,7 @@ class Task(TimestampModel, table=True):
     created_by_user_id: int = Field(foreign_key="user.id")
     created_by_user: Optional[User] = Relationship(back_populates="tasks")
     task_name: str = Field(max_length=100)
-    access_key: str = Field(max_length=255)
+    access_key: Optional[str] = Field(max_length=255)
     url_rule: str = Field(max_length=100)
     scan_requests: Optional[List["ScanRequest"]
                             ] = Relationship(back_populates="task")
