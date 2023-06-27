@@ -110,6 +110,43 @@ async def delete_task(
     )
 
 
+@router.post("/{id}/start-task")
+async def start_task(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Start an task.
+    """
+    task = await crud.crud_task.get(db=db, id=id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    if (not crud.crud_user.is_admin(current_user)) and (task.created_by_user_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    if task.task_status_id in [constants.Status.RUNNING]:
+        raise HTTPException(
+            status_code=400, detail="Operation failed. Task is already started.")
+    if task.task_status_id in [constants.Status.KILLED, constants.Status.DONE]:
+        raise HTTPException(
+            status_code=400, detail="Operation failed. Task is already stopped.")
+
+    task_data = jsonable_encoder(task)
+    task_data["task_status_id"] = constants.Status.RUNNING
+
+    obj_in = models.Task(**task_data)
+
+    await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "Operation successful. Task has been started."
+        },
+    )
+
+
 @router.post("/{id}/stop-task")
 async def stop_task(
     *,
@@ -131,10 +168,13 @@ async def stop_task(
             status_code=400, detail="Operation failed. Task is already stopped.")
 
     task_data = jsonable_encoder(task)
+    # will turn to DONE when celery stopped, or last scan request stopped
     task_data["task_status_id"] = constants.Status.KILLED
     task_data["stopped_at"] = datetime.utcnow()
 
     obj_in = models.Task(**task_data)
+
+    # TODO: stop celery here
 
     await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
     return JSONResponse(
