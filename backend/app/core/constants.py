@@ -1,3 +1,4 @@
+# Just a temporary solution, by right should get the id from database
 class Status(object):
     WAITING = 1
     RUNNING = 2
