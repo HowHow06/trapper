@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import text
 from sqlmodel import Field, SQLModel
@@ -20,3 +21,5 @@ class TimestampModel(SQLModel):
             "server_default": text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
         }
     )
+
+    deleted_at: Optional[datetime] = Field(default=None)
