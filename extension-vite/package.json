@@ -1,6 +1,6 @@
 {
   "name": "trapper-client",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "Howard Lim TP055278",
   "description": "",
   "type": "module",
@@ -28,6 +28,7 @@
     "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0",
     "sass": "^1.63.4",
+    "sweetalert2": "^11.7.12",
     "yup": "^1.2.0"
   },
   "devDependencies": {
