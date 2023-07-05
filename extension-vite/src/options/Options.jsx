@@ -89,8 +89,9 @@ function App() {
           icon: 'error',
           title: 'Oops...',
           text: `Failed to ${isNewTask ? 'create' : 'update'} the task!`,
+        }).then(() => {
+          window.location.reload() // refresh the page just in case the user is logged out
         })
-        setShouldRefresh(!shouldRefresh)
         return
       }
 
@@ -182,6 +183,7 @@ function App() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     isInvalid={formik.touched.taskName && !!formik.errors.taskName}
+                    disabled={hasRunningTask}
                   />
                   <Form.Control.Feedback type="invalid">
                     {formik.errors.taskName}
@@ -209,6 +211,7 @@ function App() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     isInvalid={formik.touched.urlRule && !!formik.errors.urlRule}
+                    disabled={hasRunningTask}
                   />
                   <Form.Control.Feedback type="invalid">
                     {formik.errors.urlRule}
