@@ -18,8 +18,8 @@ class ScanRequest(TimestampModel, table=True):
     request_endpoint: str = Field(max_length=255)
     request_information: str
     request_hash: str = Field(max_length=255)
-    start_at: datetime
-    end_at: datetime
+    start_at: Optional[datetime]
+    end_at: Optional[datetime]
     task_id: int = Field(foreign_key="task.id")
     task: Task = Relationship(back_populates="scan_requests")
     app_version: str = Field(max_length=20)
