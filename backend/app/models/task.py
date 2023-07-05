@@ -20,4 +20,5 @@ class Task(TimestampModel, table=True):
     url_rule: str = Field(max_length=100)
     scan_requests: Optional[List["ScanRequest"]
                             ] = Relationship(back_populates="task", sa_relationship_kwargs={'lazy': 'selectin'})
+    app_version: str = Field(max_length=20)
     stopped_at: Optional[datetime] = Field(default=None)

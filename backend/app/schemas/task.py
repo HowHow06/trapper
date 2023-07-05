@@ -27,9 +27,10 @@ class TaskInDBBase(TaskBase):
     task_status_id: int
     created_by_user_id: int
     task_name: str
-    access_key: str
+    access_key: Optional[str]
     url_rule: str
-    stopped_at: datetime
+    app_version: str
+    stopped_at: Optional[datetime]
 
     class Config:  # A special class that is used to configure the behavior of the Pydantic model
         orm_mode = True  # A configuration option for Pydantic that enables ORM mode, able to read the data directly from SQLAlchemy models, mainly to validate the response model

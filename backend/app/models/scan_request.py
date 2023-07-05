@@ -11,7 +11,6 @@ class ScanRequest(TimestampModel, table=True):
     __tablename__ = "scan_request"
     id: Optional[int] = Field(default=None, primary_key=True)
     original_request_data: str
-    payload: Optional[str]
     scan_status_id: int = Field(foreign_key="lookup.id")
     scan_status: Lookup = Relationship(
         back_populates="scan_requests")
@@ -22,7 +21,6 @@ class ScanRequest(TimestampModel, table=True):
     end_at: Optional[datetime]
     task_id: int = Field(foreign_key="task.id")
     task: Task = Relationship(back_populates="scan_requests")
-    app_version: str = Field(max_length=20)
     result: Optional["Result"] = Relationship(
         # sa_relationship_kwargs={'uselist': False},
         back_populates="scan_request")  # one to one
