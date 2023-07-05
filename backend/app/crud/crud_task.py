@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from app.core import constants, utils
+from app.core.config import get_version
 from app.crud.base import CRUDBase
 from app.models import Task
 from app.schemas.task import TaskCreate, TaskUpdate
@@ -19,6 +20,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
             **obj_in_data,
             created_by_user_id=created_by_user_id,
             task_status_id=constants.Status.WAITING,
+            app_version=get_version()
         )
         db.add(db_obj)
         await db.commit()
