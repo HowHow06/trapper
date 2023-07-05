@@ -11,7 +11,7 @@ class ScanRequest(TimestampModel, table=True):
     __tablename__ = "scan_request"
     id: Optional[int] = Field(default=None, primary_key=True)
     original_request_data: str
-    payload: str
+    payload: Optional[str]
     scan_status_id: int = Field(foreign_key="lookup.id")
     scan_status: Lookup = Relationship(
         back_populates="scan_requests")
