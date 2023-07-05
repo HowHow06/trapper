@@ -3,6 +3,7 @@ import secrets
 from pathlib import Path
 from typing import List, Union
 
+import toml
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, validator
 
 
@@ -58,3 +59,11 @@ if current_environment != 'DOCKER':
     settings = Settings(_env_file=dev_path, _env_file_encoding='utf-8')
 else:
     settings = Settings()  # get value from OS environment variables
+
+
+def get_version() -> str:
+    tomlFilePath = Path(__file__).resolve().parent.parent.parent / \
+        "pyproject.toml"
+    pyproject = toml.load(tomlFilePath)
+    version = pyproject['tool']['poetry']['version']
+    return version
