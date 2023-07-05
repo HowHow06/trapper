@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "trapper-backend"
-version = "0.1.0"
+version = "1.0.0"
 description = "Backend API server for Trapper project"
 authors = ["Howard TP055278 <howardlim06@outlook.com>"]
 readme = "README.md"
@@ -23,6 +23,7 @@ fuzzywuzzy = "^0.18.0"
 requests = "^2.31.0"
 python-slugify = "^8.0.1"
 pycryptodome = "^3.18.0"
+toml = "^0.10.2"
 
 
 [build-system]
