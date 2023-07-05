@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List
+from typing import Any, List, Optional, Union
 
 from app import crud, models, schemas
 from app.api import deps
@@ -8,6 +8,7 @@ from app.models import User as UserModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from sqlalchemy import or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -18,18 +19,51 @@ async def read_tasks(
     db: AsyncSession = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
+    sort_by: Optional[str] = None,
+    desc_order: bool = False,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Retrieve tasks.
     """
     if crud.crud_user.is_admin(current_user):
-        tasks = await crud.crud_task.get_multi(db, skip=skip, limit=limit)
+        tasks = await crud.crud_task.get_multi(db, skip=skip, limit=limit, sort_by=sort_by, desc_order=desc_order)
     else:
         tasks = await crud.crud_task.get_multi_by_owner(
-            db=db, created_by_user_id=current_user.id, skip=skip, limit=limit
+            db=db,
+            created_by_user_id=current_user.id,
+            skip=skip,
+            limit=limit,
+            sort_by=sort_by,
+            desc_order=desc_order
         )
     return tasks
+
+
+@router.get("/current")
+async def read_current_task(
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Union[schemas.Task, None]:
+    """
+    Retrieve current task for the user.
+    """
+    condition = or_(models.Task.task_status_id == constants.Status.WAITING,
+                    models.Task.task_status_id == constants.Status.RUNNING)
+    tasks = await crud.crud_task.get_multi_by_owner(
+        db=db,
+        created_by_user_id=current_user.id,
+        skip=0,
+        limit=1,
+        sort_by="created_at",
+        desc_order=True,
+        where=condition
+    )
+
+    if tasks and len(tasks) > 0:
+        return tasks[0]
+    else:
+        return None
 
 
 @router.post("/", response_model=schemas.Task)
@@ -42,6 +76,13 @@ async def create_task(
     """
     Create new task.
     """
+    # Check for current task
+    current_task = await read_current_task(db=db, current_user=current_user)
+    if current_task is not None:
+        raise HTTPException(
+            status_code=400,
+            detail="Operation failed. User already has a current task, please stop the task before creating a new one."
+        )
     task = await crud.crud_task.create_with_owner(
         db=db, obj_in=task_in, created_by_user_id=current_user.id)
     return task
@@ -60,7 +101,10 @@ async def update_task(
     """
     task = await crud.crud_task.get(db=db, id=id)
     if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=404, detail="Task not found.")
+    if task.task_status_id == constants.Status.RUNNING:
+        raise HTTPException(
+            status_code=404, detail="Operation failed. The task is running.")
     if (not crud.crud_user.is_admin(current_user)) and (task.created_by_user_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
     task = await crud.crud_task.update(db=db, db_obj=task, obj_in=task_in)
@@ -235,4 +279,6 @@ async def create_scan_request(
 
     scan_request = await crud.crud_scan_request.create(
         db=db, obj_in=obj_in)
+
+    # TODO: start celery app scan here
     return scan_request

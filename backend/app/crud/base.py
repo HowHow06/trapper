@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, Generic, List, Optional, Type, TypeVar
 
-from sqlalchemy import and_, delete, select
+from sqlalchemy import and_, delete, desc, select
 from sqlalchemy import update as sql_update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel
@@ -33,13 +33,27 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     # from sqlalchemy import or_
     # where_clause = or_(Task.status_id == 1, Task.status_id == 2)
     # result = await crud.get_multi(db, where=where_clause)
-    async def get_multi(self, db: AsyncSession, skip: int = 0, limit: int = 100, where=None) -> List[ModelType]:
+    async def get_multi(self, db: AsyncSession, skip: int = 0, limit: int = 100, where=None, sort_by: Optional[str] = None,
+                        desc_order: bool = False) -> List[ModelType]:
         conditions = [self.model.deleted_at.is_(None)]
 
         if where is not None:
             conditions.append(where)
         statement = select(self.model).filter(
             and_(*conditions)).offset(skip).limit(limit)
+
+        if sort_by is not None:
+            if hasattr(self.model, sort_by):
+                if desc_order:
+                    statement = statement.order_by(
+                        desc(getattr(self.model, sort_by)))
+                else:
+                    statement = statement.order_by(
+                        getattr(self.model, sort_by))
+            else:
+                raise ValueError(
+                    f"Sort column {sort_by} does not exist on {self.model.__name__}")
+
         result = await db.execute(statement)
         return result.scalars().all()
 
