@@ -269,7 +269,8 @@ async def create_scan_request(
     if not is_task_running:
         raise HTTPException(
             status_code=400, detail="Operation failed. Task is not running.")
-
+    
+    # TODO: check if is new request before saving
     scan_request_data = jsonable_encoder(scan_request_in)
 
     scan_request_data["original_request_data"] = json.dumps(
