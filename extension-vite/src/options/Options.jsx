@@ -25,7 +25,7 @@ function App() {
       const response = await api.getCurrentTask()
 
       // Check if the response was successful and a task was returned
-      if (response && response.data) {
+      if (response && isApiSuccess(response) && response.data) {
         const task = response.data
         const {
           url_rule: urlRule,
