@@ -8,6 +8,7 @@ import PopupContainer from '../components/PopupContainer'
 import { ArrowUpRight, Pause, Play, Stop } from '../components/Svg'
 import constants from '../core/constants'
 import { isApiSuccess } from '../utils/api-call'
+import { sendRuntimeMessagePromise } from '../utils/chromeMessage'
 import './Popup.css'
 
 function App() {
@@ -23,6 +24,25 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [shouldRefresh, setShouldRefresh] = useState(false)
 
+  const getTaskToStart = (taskFromApi) => {
+    const {
+      task_status_id: taskStatusId,
+      task_name: taskName,
+      url_rule: urlRule,
+      id: id,
+      access_key: accessKey,
+    } = taskFromApi
+
+    const taskToStart = {
+      urlRule,
+      taskName,
+      id,
+      accessKey,
+      taskStatusId,
+    }
+    return taskToStart
+  }
+
   useEffect(() => {
     const initialize = async () => {
       const fetchFirstTask = async () => {
@@ -30,15 +50,17 @@ function App() {
         // Check if the response was successful and a task was returned
         if (response && response.data) {
           const task = response.data
-          const {
-            url_rule: urlRule,
-            task_name: taskName,
-            id,
-            access_key: accessKey,
-            task_status_id: taskStatusId,
-          } = task
-          setTask({ urlRule, taskName, id, accessKey, taskStatusId })
-          console.log('hi task!', { urlRule, taskName, id, accessKey, taskStatusId })
+          const taskForState = getTaskToStart(task)
+          setTask(taskForState)
+          console.log('hi task!', taskForState)
+
+          if (taskForState.taskStatusId === constants.TASK_STATUS.RUNNING) {
+            // restart the task if the current task is running whenever the popup is opened
+            sendRuntimeMessagePromise({
+              actionName: constants.MESSAGE_ACTION_NAME.START_TASK,
+              task: taskForState,
+            })
+          }
         } else {
           console.log('no task!')
           setTask({
@@ -111,18 +133,28 @@ function App() {
       return
     }
 
+    const taskToStart = getTaskToStart(response.data.task)
+    // save task to storage here, so that the event listener can get the value
+    // saveTaskToStorage(taskToStart)
+
     // TODO: add listener here
+    sendRuntimeMessagePromise({
+      actionName: constants.MESSAGE_ACTION_NAME.START_TASK,
+      task: taskToStart,
+    })
 
     // chrome.notifications.create(
     //   'notify1',
     //   {
     //     type: 'basic',
-    //     iconUrl: 'img/logo-16.png',
+    //     iconUrl: 'icons/logo.ico',
     //     title: `Operation Succeed!`,
     //     message: `Demo notification Message here`,
     //     contextMessage: 'Task started successfully.',
     //   },
     //   () => {
+
+    //     console.log("Error:", chrome.runtime.lastError)
     //     console.log('noti functions callback')
     //   },
     // )
@@ -140,7 +172,10 @@ function App() {
       console.log('Error when stoping task!', response.error)
       return
     }
+
+    // clearAllStorageData()
     // TODO: remove listener here
+    sendRuntimeMessagePromise({ actionName: constants.MESSAGE_ACTION_NAME.STOP_TASK })
 
     ignore.current = false
     setShouldRefresh(!shouldRefresh)
@@ -217,6 +252,14 @@ function App() {
             )}
           </>
         )}
+        <PauseTaskButton
+          onClick={() => {
+            sendRuntimeMessagePromise({
+              actionName: constants.MESSAGE_ACTION_NAME.START_TASK,
+              task: task,
+            })
+          }}
+        />
         <div>
           <hr />
           <Stack
