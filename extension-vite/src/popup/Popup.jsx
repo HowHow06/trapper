@@ -240,6 +240,7 @@ function App() {
                 }}
               />
             )} */}
+            {/* TODO: show confirmation before stopping */}
             <StopTaskButton onClick={stopCurrentTask} />
           </>
         ) : (
