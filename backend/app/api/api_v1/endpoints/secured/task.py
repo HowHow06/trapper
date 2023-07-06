@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import Any, List, Optional, Union
 
@@ -182,11 +183,12 @@ async def start_task(
 
     obj_in = models.Task(**task_data)
 
-    await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
+    updated_task = await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "message": "Operation successful. Task has been started."
+            "message": "Operation successful. Task has been started.",
+            "task": jsonable_encoder(updated_task)
         },
     )
 
@@ -220,11 +222,12 @@ async def stop_task(
 
     # TODO: stop celery here
 
-    await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
+    updated_task = await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
-            "message": "Operation successful. Task has been stopped."
+            "message": "Operation successful. Task has been stopped.",
+            "task": jsonable_encoder(updated_task)
         },
     )
 
@@ -268,6 +271,9 @@ async def create_scan_request(
             status_code=400, detail="Operation failed. Task is not running.")
 
     scan_request_data = jsonable_encoder(scan_request_in)
+
+    scan_request_data["original_request_data"] = json.dumps(
+        scan_request_in.original_request_data.__dict__)
     scan_request_data["task_id"] = task_id
     scan_request_data["scan_status_id"] = constants.Status.WAITING
     # TODO: get the information by analyzing the package
