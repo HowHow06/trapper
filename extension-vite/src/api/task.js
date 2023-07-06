@@ -46,10 +46,26 @@ export default function Task(api) {
     })
   }
 
+  const startTask = async ({ id }) => {
+    return await apiCall({
+      axiosInstance: api,
+      url: `/tasks/${id}/start-task`,
+    })
+  }
+
+  const stopTask = async ({ id }) => {
+    return await apiCall({
+      axiosInstance: api,
+      url: `/tasks/${id}/stop-task`,
+    })
+  }
+
   return {
     createTask,
     updateTask,
     getTasks,
     getCurrentTask,
+    startTask,
+    stopTask,
   }
 }
