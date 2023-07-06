@@ -4,7 +4,7 @@ export default defineManifest({
   name: 'Trapper Client',
   description:
     'A chrome extension for scanning XSS vulnerability, as a client for the trapper project.',
-  version: '0.1.1',
+  version: '1.0.0',
   manifest_version: 3,
   icons: {
     16: 'img/logo-16.png',
@@ -33,6 +33,16 @@ export default defineManifest({
       matches: [],
     },
   ],
-  permissions: [],
+  permissions: [
+    'storage', // for chrome storage api
+    'activeTab', // for tab message api
+    'tabs', // for tab message api
+    'webRequest', // for hooking the web request
+    // 'declarativeNetRequestWithHostAccess', // for hooking the web request in manifest 3
+    'notifications', // for chrome notifications
+  ],
+  host_permissions: [
+    '*://*/*', // for hooking the web request, all url
+  ],
   // host_permissions: ["http://localhost:3000/", "http://localhost:8000/"], // uncomment this if extension fail to send HTTP-only cookie along with the api calls
 })
