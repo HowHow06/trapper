@@ -252,14 +252,6 @@ function App() {
             )}
           </>
         )}
-        <PauseTaskButton
-          onClick={() => {
-            sendRuntimeMessagePromise({
-              actionName: constants.MESSAGE_ACTION_NAME.START_TASK,
-              task: task,
-            })
-          }}
-        />
         <div>
           <hr />
           <Stack
