@@ -1,9 +1,9 @@
-import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
-import api from '../api';
-import { isApiSuccess } from 'src/utils/api-call';
+import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import { DEFAULT } from 'src/constants/variables';
+import { isApiSuccess } from 'src/utils/api-call';
 import logger from 'src/utils/logger';
+import api from '../api';
 
 const HANDLERS_ACTION_TYPES = {
   INITIALIZE: 'INITIALIZE',
