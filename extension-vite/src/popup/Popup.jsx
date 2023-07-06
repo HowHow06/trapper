@@ -62,6 +62,12 @@ function App() {
         }
       }
 
+      if (ignore.current) {
+        return
+      }
+
+      ignore.current = true
+
       await Promise.all([fetchFirstTask(), testToken()])
 
       setIsLoading(false)
@@ -106,6 +112,22 @@ function App() {
     }
 
     // TODO: add listener here
+
+    // chrome.notifications.create(
+    //   'notify1',
+    //   {
+    //     type: 'basic',
+    //     iconUrl: 'img/logo-16.png',
+    //     title: `Operation Succeed!`,
+    //     message: `Demo notification Message here`,
+    //     contextMessage: 'Task started successfully.',
+    //   },
+    //   () => {
+    //     console.log('noti functions callback')
+    //   },
+    // )
+
+    ignore.current = false
     setShouldRefresh(!shouldRefresh)
   }
 
@@ -118,8 +140,9 @@ function App() {
       console.log('Error when stoping task!', response.error)
       return
     }
-
     // TODO: remove listener here
+
+    ignore.current = false
     setShouldRefresh(!shouldRefresh)
   }
 
