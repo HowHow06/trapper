@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from app.core import constants, task_utils
+from app.core import constants, task_util
 from app.core.config import get_version
 from app.crud.base import CRUDBase
 from app.models import Task
@@ -26,7 +26,7 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
         await db.commit()
         await db.refresh(db_obj)
 
-        db_obj.access_key = task_utils.generate_task_access_key(
+        db_obj.access_key = task_util.generate_task_access_key(
             user_id=created_by_user_id, task_id=db_obj.id)
         await db.commit()
 

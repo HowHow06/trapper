@@ -4,7 +4,7 @@ from typing import Any, List, Optional, Union
 
 from app import crud, models, schemas
 from app.api import deps
-from app.core import constants, task_utils
+from app.core import constants, task_util
 from app.models import User as UserModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -244,7 +244,7 @@ async def create_scan_request(
     Create new scan request.
     """
     try:
-        user_id, task_id = task_utils.decipher_task_access_key(
+        user_id, task_id = task_util.decipher_task_access_key(
             scan_request_in.task_access_key)
     except:
         raise HTTPException(
