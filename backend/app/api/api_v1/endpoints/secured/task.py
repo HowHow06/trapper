@@ -4,7 +4,7 @@ from typing import Any, List, Optional, Union
 
 from app import crud, models, schemas
 from app.api import deps
-from app.core import constants, task_util
+from app.core import constants, request_util, task_util
 from app.models import User as UserModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -270,17 +270,29 @@ async def create_scan_request(
         raise HTTPException(
             status_code=400, detail="Operation failed. Task is not running.")
 
-    # TODO: check if is new request before saving
-    scan_request_data = jsonable_encoder(scan_request_in)
+    request_information = request_util.get_request_information(
+        request_data=jsonable_encoder(scan_request_in.original_request_data))
+    request_hash = request_util.generate_request_hash(
+        request_information=request_information)
+    is_new_request = await crud.crud_scan_request.is_new_request_for_task(db=db, task_id=task_id, request_hash=request_hash)
 
+    # check if is new request before saving
+    if not is_new_request:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "message": "Scan request no created, this request already exist in the same task."
+            },
+        )
+
+    scan_request_data = jsonable_encoder(scan_request_in)
     scan_request_data["original_request_data"] = json.dumps(
         scan_request_in.original_request_data.__dict__)
     scan_request_data["task_id"] = task_id
     scan_request_data["scan_status_id"] = constants.Status.WAITING
-    # TODO: get the information by analyzing the package
-    scan_request_data["request_endpoint"] = "PENDING CHANGE LOGIC"
-    scan_request_data["request_information"] = "PENDING CHANGE LOGIC"
-    scan_request_data["request_hash"] = "PENDING CHANGE LOGIC"
+    scan_request_data["request_endpoint"] = request_information['url']
+    scan_request_data["request_information"] = json.dumps(request_information)
+    scan_request_data["request_hash"] = request_hash
 
     obj_in = models.ScanRequest(**scan_request_data)
 
