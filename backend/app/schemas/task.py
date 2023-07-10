@@ -45,3 +45,8 @@ class Task(TaskInDBBase):
 # Properties properties stored in DB
 class TaskInDB(TaskInDBBase):
     pass
+
+
+class TaskWithCount(TaskInDBBase):
+    scan_request_count: int
+    result_count: Optional[int]

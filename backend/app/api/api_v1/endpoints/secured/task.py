@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Task])
+@router.get("/", response_model=List[schemas.TaskWithCount])
 async def read_tasks(
     db: AsyncSession = Depends(deps.get_db),
     skip: int = 0,
@@ -39,7 +39,19 @@ async def read_tasks(
             sort_by=sort_by,
             desc_order=desc_order
         )
-    return tasks
+
+    tasks_with_count = []
+    for task in tasks:
+        results = await read_results_by_task(db=db, id=task.id, current_user=current_user)
+
+        task_data = jsonable_encoder(task)
+        task_data["scan_request_count"] = len(task.scan_requests)
+        task_data["result_count"] = len(results)
+
+        obj_in = schemas.TaskWithCount(**task_data)
+        tasks_with_count.append(obj_in)
+
+    return tasks_with_count
 
 
 @router.get("/current")
