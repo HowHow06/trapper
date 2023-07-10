@@ -19,7 +19,7 @@ def perform_scan_celery(scan_request):
     print(f"Worker running....: {scan_request['request_endpoint']}")
     request_package = json.loads(scan_request['original_request_data'])
     scan_task.scan(request_package=request_package,
-                   task_id=scan_request['task_id'])
+                   request_id=scan_request['id'])
     return f"test scan return {scan_request['request_endpoint']}"
     # if status == TaskStatus.WORKING:  # just to change the status, indicate that the task has started
     #     # 更新任务状态和hunter状态

@@ -14,9 +14,9 @@ logger.setLevel(logging.INFO)
 IS_WIN = platform.system() == "Windows"
 
 
-def print_command(request_package, task_id):
+def print_command(request_package, request_id):
     try:
-        xsstrike_process = XSStrikeProcess(request_package, task_id)
+        xsstrike_process = XSStrikeProcess(request_package, request_id)
         _status, command = xsstrike_process.get_command()
         logger.info("!!!!!Command is: {}".format(command))
     except KeyboardInterrupt as e:
@@ -25,10 +25,11 @@ def print_command(request_package, task_id):
         logger.info("Trapper printing has completed")
 
 
-def scan(request_package, task_id):
-    logger.info("Trapper scanning has started with task id: {}".format(task_id))
+def scan(request_package, request_id):
+    logger.info(
+        "Trapper scanning has started with request id: {}".format(request_id))
     try:
-        xsstrike_process = XSStrikeProcess(request_package, task_id)
+        xsstrike_process = XSStrikeProcess(request_package, request_id)
         xsstrike_process.engine_start()
         while not xsstrike_process.engine_has_terminated() and xsstrike_process.process is not None:
             logger.info("XSStrike program is running")
@@ -42,10 +43,10 @@ def scan(request_package, task_id):
 
 
 class XSStrikeProcess:
-    def __init__(self, request_package, task_id):
+    def __init__(self, request_package, request_id):
         self.process = None
         self.request_package = request_package
-        self.task_id = task_id
+        self.request_id = request_id
 
     def parse_header_string(self, header_data):
         if header_data is None:
@@ -102,7 +103,7 @@ class XSStrikeProcess:
             command += ["--data", "\"{}\"".format(data)]
         if header_string and isinstance(header_string, str):
             command += ["--headers", "\"{}\"".format(header_string)]
-        command += ["--trapper-celery", "{}".format(self.task_id)]
+        command += ["--trapper-celery", "{}".format(self.request_id)]
         return True, command
 
     def init_command_by_path(self):
