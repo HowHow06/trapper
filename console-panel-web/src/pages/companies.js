@@ -1,20 +1,20 @@
-import Head from 'next/head';
-import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
+import ArrowUpOnSquareIcon from '@heroicons/react/24/solid/ArrowUpOnSquareIcon';
 import PlusIcon from '@heroicons/react/24/solid/PlusIcon';
 import {
   Box,
   Button,
   Container,
+  Unstable_Grid2 as Grid,
   Pagination,
   Stack,
   SvgIcon,
   Typography,
-  Unstable_Grid2 as Grid,
 } from '@mui/material';
+import Head from 'next/head';
 import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
-import { CompanyCard } from 'src/sections/companies/company-card';
 import { CompaniesSearch } from 'src/sections/companies/companies-search';
+import { CompanyCard } from 'src/sections/companies/company-card';
 
 const companies = [
   {
@@ -74,7 +74,7 @@ const companies = [
 const Page = () => (
   <>
     <Head>
-      <title>Companies | Devias Kit</title>
+      <title>Companies | Trapper Console</title>
     </Head>
     <Box
       component="main"

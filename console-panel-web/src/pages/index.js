@@ -1,6 +1,6 @@
-import Head from 'next/head';
-import { subDays, subHours } from 'date-fns';
 import { Box, Container, Unstable_Grid2 as Grid } from '@mui/material';
+import { subDays, subHours } from 'date-fns';
+import Head from 'next/head';
 import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
 import { OverviewBudget } from 'src/sections/overview/overview-budget';
 import { OverviewLatestOrders } from 'src/sections/overview/overview-latest-orders';
@@ -16,7 +16,7 @@ const now = new Date();
 const Page = () => (
   <>
     <Head>
-      <title>Overview | Devias Kit</title>
+      <title>Overview | Trapper Console</title>
     </Head>
     <Box
       component="main"

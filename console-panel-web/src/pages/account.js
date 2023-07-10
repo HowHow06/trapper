@@ -1,5 +1,5 @@
+import { Box, Container, Unstable_Grid2 as Grid, Stack, Typography } from '@mui/material';
 import Head from 'next/head';
-import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
 import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
 import { AccountProfile } from 'src/sections/account/account-profile';
 import { AccountProfileDetails } from 'src/sections/account/account-profile-details';
@@ -7,7 +7,7 @@ import { AccountProfileDetails } from 'src/sections/account/account-profile-deta
 const Page = () => (
   <>
     <Head>
-      <title>Account | Devias Kit</title>
+      <title>Account | Trapper Console</title>
     </Head>
     <Box
       component="main"

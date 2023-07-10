@@ -1,13 +1,13 @@
-import Head from 'next/head';
 import { Box, Container, Stack, Typography } from '@mui/material';
+import Head from 'next/head';
+import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
 import { SettingsNotifications } from 'src/sections/settings/settings-notifications';
 import { SettingsPassword } from 'src/sections/settings/settings-password';
-import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
 
 const Page = () => (
   <>
     <Head>
-      <title>Settings | Devias Kit</title>
+      <title>Settings | Trapper Console</title>
     </Head>
     <Box
       component="main"

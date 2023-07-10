@@ -60,7 +60,7 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Login | Devias Kit</title>
+        <title>Login | Trapper Console</title>
       </Head>
       <Box
         sx={{
