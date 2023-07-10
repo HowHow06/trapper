@@ -108,6 +108,9 @@ async def update_task(
     if task.task_status_id == constants.Status.RUNNING:
         raise HTTPException(
             status_code=404, detail="Operation failed. The task is running.")
+    if task.task_status_id in [constants.Status.KILLED, constants.Status.DONE]:
+        raise HTTPException(
+            status_code=404, detail="Operation failed. The task is stopped.")
     if (not crud.crud_user.is_admin(current_user)) and (task.created_by_user_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
     task = await crud.crud_task.update(db=db, db_obj=task, obj_in=task_in)
