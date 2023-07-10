@@ -1,5 +1,4 @@
-import ChevronUpDownIcon from '@heroicons/react/24/solid/ChevronUpDownIcon';
-import { Box, Divider, Drawer, Stack, SvgIcon, Typography, useMediaQuery } from '@mui/material';
+import { Box, Divider, Drawer, Stack, Typography, useMediaQuery } from '@mui/material';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import PropTypes from 'prop-types';
@@ -64,9 +63,6 @@ export const SideNav = (props) => {
                 Console Panel
               </Typography>
             </div>
-            <SvgIcon fontSize="small" sx={{ color: 'neutral.500' }}>
-              <ChevronUpDownIcon />
-            </SvgIcon>
           </Box>
         </Box>
         <Divider sx={{ borderColor: 'neutral.700' }} />
