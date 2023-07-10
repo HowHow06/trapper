@@ -38,6 +38,7 @@ class TaskInDBBase(TaskBase):
 
 # Properties to return to client as RESPONSE
 class Task(TaskInDBBase):
+    created_at: Optional[datetime]
     pass
 
 
