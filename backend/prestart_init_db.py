@@ -4,6 +4,7 @@ import logging
 from app import crud, schemas
 from app.core.config import settings
 from app.db.session import AsyncSessionLocal
+from app.models import Vulnerability
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -115,13 +116,48 @@ async def init_lookup_vulnerability_type(db: AsyncSession) -> None:
         await crud.crud_lookup.create(db, obj_in=xss_type)
 
 
+async def init_xss_vulnerability(db: AsyncSession) -> None:
+    condition = Vulnerability.type_id == 8  # meaning is xss vuln type
+    vulns = await crud.crud_vulnerability.get_multi(
+        db, where=condition)
+    if len(vulns) != 3:
+        reflected_xss = schemas.VulnerabilityCreate(
+            id=1,
+            name="Reflected XSS",
+            description="Reflected Cross-Site Scripting (XSS) vulnerabilities occur when unvalidated user input is directly included in a webpage and is immediately returned by the server in an error message, search result, or any other response that includes some or all of the input provided by the user. This type of vulnerability is called \"reflected\" because the server reflects the malicious script back to the user's browser. The user unknowingly runs the script in their own browser, which can lead to various harmful outcomes.",
+            type_id=8,  # XSS
+            patch_suggestion="Implement proper input validation and sanitization. User-provided data should never be used directly in the generation of the webpage without ensuring it's secure. A common method is to HTML-encode user input so that potentially harmful characters are made safe. Additionally, consider implementing a robust Content Security Policy (CSP) to mitigate the impact of any potential XSS attacks.",
+            severity_level_id=7  # HIGH
+        )
+        await crud.crud_vulnerability.create(db, obj_in=reflected_xss)
+        stored_xss = schemas.VulnerabilityCreate(
+            id=2,
+            name="Stored XSS",
+            description="Stored Cross-Site Scripting (XSS) vulnerabilities occur when malicious user input is stored on the target server (e.g., in a database, message forum, visitor log, comment field, etc.) and later served to users. When other users load affected pages, the malicious script executes, typically leading to unauthorized access, cookie theft, or other harmful effects.",
+            type_id=8,  # XSS
+            patch_suggestion="Similar to reflected XSS, input validation and sanitization are key. Stored data that originated from users should be treated as potentially harmful and HTML-encoded or otherwise sanitized before being served to users. You should also be cautious with user-generated files or content. CSP is also beneficial in this scenario.",
+            severity_level_id=7  # HIGH
+        )
+        await crud.crud_vulnerability.create(db, obj_in=stored_xss)
+        DOM_xss = schemas.VulnerabilityCreate(
+            id=3,
+            name="DOM XSS",
+            description="Document Object Model Cross-Site Scripting (DOM XSS) vulnerabilities occur when a script manipulates the page's DOM in an unsafe way. The page's script itself can be safe, but if it interacts with the DOM without properly sanitizing user input, it can inadvertently allow the user to inject executable code. As the malicious payload is executed as a result of modifying the DOM \"on the fly,\" it's possible for the payload to be never sent to the server, making it a client-side attack.",
+            type_id=8,  # XSS
+            patch_suggestion="To mitigate DOM XSS, use element.textContent instead of element.innerHTML when manipulating DOM elements with user-provided data. When you need to dynamically create HTML, consider using safer methods like element.setAttribute or element.createElement. Avoid using dangerous JavaScript functions like eval(), document.write(), and innerHTML as they can introduce DOM XSS if used with untrusted data. Also, be sure to apply proper output encoding when inserting user-controlled data into the page.",
+            severity_level_id=6  # MEDIUM
+        )
+        await crud.crud_vulnerability.create(db, obj_in=DOM_xss)
+
+
 async def init() -> None:
     async with AsyncSessionLocal() as db:
-        # await init_admin(db)
-        # await init_user(db)
+        await init_admin(db)
+        await init_user(db)
         await init_lookup_status(db)
-        # await init_lookup_severity(db)
-        # await init_lookup_vulnerability_type(db)
+        await init_lookup_severity(db)
+        await init_lookup_vulnerability_type(db)
+        await init_xss_vulnerability(db)
 
 
 async def main() -> None:
