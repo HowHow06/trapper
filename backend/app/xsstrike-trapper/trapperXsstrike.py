@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import argparse
+import asyncio
 import json
 import sys
 
@@ -19,6 +20,7 @@ from modes.bruteforcer import bruteforcer
 from modes.crawl import crawl
 from modes.scan import scan
 from modes.singleFuzz import singleFuzz
+from modes.trapperScan import scan as trapper_scan
 
 # Just a fancy ass banner
 print('''%s
@@ -91,6 +93,8 @@ parser.add_argument('--file-log-level', help='File logging level', dest='file_lo
                     choices=core.log.log_config.keys(), default=None)
 parser.add_argument('--log-file', help='Name of the file to log', dest='log_file',
                     default=core.log.log_file)
+parser.add_argument('--trapper-celery', help='Trapper celery worker task id', dest='trapper_celery_request_id',
+                    default=core.log.log_file)
 args = parser.parse_args()
 
 # Pull all parameter values of dict from argparse namespace into local variables of name == key
@@ -114,6 +118,7 @@ delay = args.delay
 skip = args.skip
 skipDOM = args.skipDOM
 blindXSS = args.blindXSS
+trapper_celery_request_id = args.trapper_celery_request_id
 core.log.console_log_level = args.console_log_level
 core.log.file_log_level = args.file_log_level
 core.log.log_file = args.log_file
@@ -173,8 +178,10 @@ elif not recursive and not args_seeds:
         bruteforcer(target, paramData, payloadList,
                     encoding, headers, delay, timeout)
     else:
-        scan(target, paramData, encoding, headers,
-             delay, timeout, skipDOM, skip)
+        # use this because the trapper scan is an async function
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(trapper_scan(target, paramData, encoding, headers,
+                                             delay, timeout, skipDOM, skip, trapper_celery_request_id))
 else:
     if target:
         seedList.append(target)
