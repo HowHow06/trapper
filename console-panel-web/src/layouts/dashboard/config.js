@@ -10,7 +10,7 @@ import { SvgIcon } from '@mui/material';
 
 export const items = [
   {
-    title: 'Overview',
+    title: 'Dashboard',
     path: '/',
     icon: (
       <SvgIcon fontSize="small">
@@ -19,7 +19,7 @@ export const items = [
     ),
   },
   {
-    title: 'Customers',
+    title: 'Tasks',
     path: '/customers',
     icon: (
       <SvgIcon fontSize="small">

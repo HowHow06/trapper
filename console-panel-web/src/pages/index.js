@@ -16,7 +16,7 @@ const now = new Date();
 const Page = () => (
   <>
     <Head>
-      <title>Overview | Trapper Console</title>
+      <title>Dashboard | Trapper Console</title>
     </Head>
     <Box
       component="main"
