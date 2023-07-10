@@ -129,7 +129,7 @@ async def update_task(
     return task
 
 
-@router.get("/{id}", response_model=schemas.Task)
+@router.get("/{id}", response_model=schemas.TaskWithCount)
 async def read_task(
     *,
     db: AsyncSession = Depends(deps.get_db),
@@ -144,7 +144,14 @@ async def read_task(
         raise HTTPException(status_code=404, detail="Task not found")
     if (not crud.crud_user.is_admin(current_user)) and (task.created_by_user_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
-    return task
+
+    results = await read_results_by_task(db=db, id=task.id, current_user=current_user)
+    task_data = jsonable_encoder(task)
+    task_data["scan_request_count"] = len(task.scan_requests)
+    task_data["result_count"] = len(results)
+
+    taskWithCount = schemas.TaskWithCount(**task_data)
+    return taskWithCount
 
 
 @router.delete("/{id}", response_model=schemas.Task)

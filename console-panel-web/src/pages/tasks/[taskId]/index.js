@@ -26,6 +26,14 @@ const taskInfoColumns = [
     type: 'task_status',
   },
   {
+    name: 'Requests',
+    accessor: 'scan_request_count',
+  },
+  {
+    name: 'Vulnerabilities',
+    accessor: 'result_count',
+  },
+  {
     name: 'Created At',
     accessor: 'created_at',
     type: 'datetime',
