@@ -47,6 +47,6 @@ class TaskInDB(TaskInDBBase):
     pass
 
 
-class TaskWithCount(TaskInDBBase):
+class TaskWithCount(Task):
     scan_request_count: int
     result_count: Optional[int]
