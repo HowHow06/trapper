@@ -5,6 +5,7 @@ import Auth from './auth';
 import Result from './result';
 import ScanRequest from './scanRequest';
 import Task from './task';
+import Vulnerability from './vulnerability';
 
 export const axiosInstance = axios.create({
   baseURL: process.env.API_URL,
@@ -45,6 +46,7 @@ export const api = {
   ...ScanRequest(axiosInstance),
   ...Task(axiosInstance),
   ...Result(axiosInstance),
+  ...Vulnerability(axiosInstance),
 };
 
 export default api;
