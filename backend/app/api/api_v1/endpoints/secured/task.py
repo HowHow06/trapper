@@ -275,7 +275,7 @@ async def stop_task(
     )
 
 
-@router.post("/{id}/scan-request", response_model=schemas.ScanRequest)
+@router.post("/{id}/scan-requests", response_model=schemas.ScanRequest)
 async def create_scan_request(
     *,
     db: AsyncSession = Depends(deps.get_db),
@@ -345,3 +345,31 @@ async def create_scan_request(
     # TODO: start celery app scan here
     perform_scan_celery.delay(jsonable_encoder(scan_request))
     return scan_request
+
+
+@router.get("/{id}/scan-requests", response_model=List[schemas.ScanRequest])
+async def read_scan_requests(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    skip: int = 0,
+    limit: int = 100,
+    sort_by: Optional[str] = None,
+    desc_order: bool = False,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Retrieve scan requests by task.
+    """
+
+    task = await crud.crud_task.get(db=db, id=id)
+    is_not_current_user = task.created_by_user_id != current_user.id and not (crud.crud_user.is_admin(
+        current_user))
+    if is_not_current_user:
+        raise HTTPException(
+            status_code=400, detail="Operation failed. Not enough permission.")
+
+    condition = models.ScanRequest.task_id == id
+    tasks = await crud.crud_scan_request.get_multi(db, skip=skip, limit=limit, sort_by=sort_by, desc_order=desc_order, where=condition)
+
+    return tasks

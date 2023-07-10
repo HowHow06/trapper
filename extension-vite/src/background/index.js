@@ -174,7 +174,7 @@ function getAnalysedRequestInformation(details) {
 async function createScanRequest({ urlData, taskId, accessKey }) {
   // using fetch here because axios is not usable in service worker
   console.log('Sending create scan request to fastapi with data: ', urlData)
-  const url = `${constants.API_ENDPOINT}/tasks/${taskId}/scan-request`
+  const url = `${constants.API_ENDPOINT}/tasks/${taskId}/scan-requests`
   const params = {
     original_request_data: urlData,
     task_access_key: accessKey,

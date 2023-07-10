@@ -4,7 +4,7 @@ export default function ScanRequest(api) {
   const createScanRequest = async ({ taskId, requestData, accessKey }) => {
     return await apiCall({
       axiosInstance: api,
-      url: `/tasks/${taskId}/scan-request`,
+      url: `/tasks/${taskId}/scan-requests`,
       params: {
         original_request_data: requestData,
         task_access_key: accessKey,
