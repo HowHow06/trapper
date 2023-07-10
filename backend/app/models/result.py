@@ -13,8 +13,8 @@ class Result(TimestampModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     request_id: int = Field(foreign_key="scan_request.id")
     scan_request: ScanRequest = Relationship(
-        back_populates="result")
+        back_populates="result", sa_relationship_kwargs={'lazy': 'selectin'})
     vulnerability_id: int = Field(foreign_key="vulnerability.id")
     vulnerability: Vulnerability = Relationship(
-        back_populates="results")
+        back_populates="results", sa_relationship_kwargs={'lazy': 'selectin'})
     payload: str

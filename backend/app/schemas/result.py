@@ -1,5 +1,6 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
+from app.schemas.scan_request import ScanRequest
 from pydantic import BaseModel
 
 
@@ -34,7 +35,8 @@ class ResultInDBBase(ResultBase):
 
 # Properties to return to client as RESPONSE
 class Result(ResultInDBBase):
-    pass
+    # will be automatically fetched when pulling data because of `sa_relationship_kwargs={'lazy': 'selectin'}` in model
+    scan_request: ScanRequest
 
 
 # Properties properties stored in DB

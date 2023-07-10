@@ -21,9 +21,9 @@ async def read_results(
     Retrieve result.
     """
     if crud.crud_user.is_admin(current_user):
-        tasks = await crud.crud_result.get_multi(db, skip=skip, limit=limit, sort_by=sort_by, desc_order=desc_order)
+        results = await crud.crud_result.get_multi(db, skip=skip, limit=limit, sort_by=sort_by, desc_order=desc_order)
     else:
-        tasks = await crud.crud_result.get_multi_by_owner(
+        results = await crud.crud_result.get_multi_by_owner(
             db=db,
             created_by_user_id=current_user.id,
             skip=skip,
@@ -31,4 +31,4 @@ async def read_results(
             sort_by=sort_by,
             desc_order=desc_order
         )
-    return tasks
+    return results

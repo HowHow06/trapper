@@ -1,6 +1,6 @@
 from app.api.api_v1.endpoints import auth, test
 from app.api.api_v1.endpoints.secured import (result, scan_request, task,
-                                              test_secured)
+                                              test_secured, vulnerability)
 from app.core.config import settings
 from fastapi import APIRouter
 
@@ -12,6 +12,8 @@ api_router.include_router(
     scan_request.router, prefix="/scan-requests", tags=["scan requests"])
 api_router.include_router(
     result.router, prefix="/results", tags=["results"])
+api_router.include_router(
+    vulnerability.router, prefix="/vulnerabilities", tags=["vulnerabilities"])
 
 
 # api_router.include_router(users.router, prefix="/users", tags=["users"])

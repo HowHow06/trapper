@@ -22,9 +22,9 @@ async def read_scan_requests(
     Retrieve scan requests.
     """
     if crud.crud_user.is_admin(current_user):
-        tasks = await crud.crud_scan_request.get_multi(db, skip=skip, limit=limit, sort_by=sort_by, desc_order=desc_order)
+        requests = await crud.crud_scan_request.get_multi(db, skip=skip, limit=limit, sort_by=sort_by, desc_order=desc_order)
     else:
-        tasks = await crud.crud_scan_request.get_multi_by_owner(
+        requests = await crud.crud_scan_request.get_multi_by_owner(
             db=db,
             created_by_user_id=current_user.id,
             skip=skip,
@@ -32,4 +32,4 @@ async def read_scan_requests(
             sort_by=sort_by,
             desc_order=desc_order
         )
-    return tasks
+    return requests
