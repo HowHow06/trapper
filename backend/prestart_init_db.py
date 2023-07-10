@@ -45,7 +45,7 @@ async def init_user(db: AsyncSession) -> None:
 async def init_lookup_status(db: AsyncSession) -> None:
     statuses = await crud.crud_lookup.get_multi_by_type(
         db, type=settings.LOOKUP_TYPE_STATUS)
-    if len(statuses) != 4:
+    if len(statuses) != 5:
         waiting_status = schemas.LookupCreate(
             id=1,
             type=settings.LOOKUP_TYPE_STATUS,
@@ -74,6 +74,13 @@ async def init_lookup_status(db: AsyncSession) -> None:
             description="Status when the task is killed when user click the stop task button, right before the task is done (for Task only)."
         )
         await crud.crud_lookup.create(db, obj_in=killed_status)
+        paused_status = schemas.LookupCreate(
+            id=9,
+            type=settings.LOOKUP_TYPE_STATUS,
+            name="PAUSED",
+            description="Status when the task is paused when user click the pause task button (for Task only)."
+        )
+        await crud.crud_lookup.create(db, obj_in=paused_status)
 
 
 async def init_lookup_severity(db: AsyncSession) -> None:
