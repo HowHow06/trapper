@@ -3,12 +3,14 @@ const TASK_STATUS = {
   RUNNING: 2,
   DONE: 3,
   KILLED: 4,
+  PAUSED: 9,
 }
 const TASK_STATUS_NAME = {
   1: 'Created',
   2: 'Running',
   3: 'Completed',
   4: 'Completed',
+  9: 'Paused',
 }
 const TIME_OUT_IN_MS = 10 * 1000
 const API_ENDPOINT = import.meta.env.VITE_API_URL

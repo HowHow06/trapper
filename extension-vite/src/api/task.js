@@ -60,6 +60,13 @@ export default function Task(api) {
     })
   }
 
+  const pauseTask = async ({ id }) => {
+    return await apiCall({
+      axiosInstance: api,
+      url: `/tasks/${id}/pause-task`,
+    })
+  }
+
   return {
     createTask,
     updateTask,
@@ -67,5 +74,6 @@ export default function Task(api) {
     getCurrentTask,
     startTask,
     stopTask,
+    pauseTask
   }
 }

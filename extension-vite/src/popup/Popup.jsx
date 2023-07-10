@@ -101,6 +101,7 @@ function App() {
   const hasCurrentTask = Boolean(task.id)
   const hasCurrentRunningTask =
     hasCurrentTask && task.taskStatusId === constants.TASK_STATUS.RUNNING
+  const hasCurrentPausedTask = hasCurrentTask && task.taskStatusId === constants.TASK_STATUS.PAUSED
 
   const handleSettingClick = () => {
     chrome.runtime.openOptionsPage()
@@ -158,6 +159,22 @@ function App() {
     //     console.log('noti functions callback')
     //   },
     // )
+
+    ignore.current = false
+    setShouldRefresh(!shouldRefresh)
+  }
+
+  const pauseCurrentTask = async () => {
+    const response = await api.pauseTask({
+      id: task.id,
+    })
+
+    if (!isApiSuccess(response)) {
+      console.log('Error when pausing task!', response.error)
+      return
+    }
+
+    sendRuntimeMessagePromise({ actionName: constants.MESSAGE_ACTION_NAME.STOP_TASK })
 
     ignore.current = false
     setShouldRefresh(!shouldRefresh)
@@ -241,7 +258,15 @@ function App() {
               />
             )} */}
             {/* TODO: show confirmation before stopping */}
+            <PauseTaskButton onClick={pauseCurrentTask} />
             <StopTaskButton onClick={stopCurrentTask} />
+          </>
+        ) : hasCurrentPausedTask ? (
+          <>
+            <ResumeTaskButton
+              onClick={startCurrentTask}
+              disabled={!isLoggedIn || !hasCurrentTask}
+            />
           </>
         ) : (
           <>

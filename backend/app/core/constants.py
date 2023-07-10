@@ -18,6 +18,7 @@ class Status(object):
     RUNNING = 2
     DONE = 3
     KILLED = 4
+    PAUSED = 9
 
 
 class Severity(object):

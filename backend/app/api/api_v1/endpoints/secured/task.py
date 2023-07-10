@@ -51,7 +51,8 @@ async def read_current_task(
     Retrieve current task for the user.
     """
     condition = or_(models.Task.task_status_id == constants.Status.WAITING,
-                    models.Task.task_status_id == constants.Status.RUNNING)
+                    models.Task.task_status_id == constants.Status.RUNNING,
+                    models.Task.task_status_id == constants.Status.PAUSED,)
     tasks = await crud.crud_task.get_multi_by_owner(
         db=db,
         created_by_user_id=current_user.id,
@@ -189,6 +190,44 @@ async def start_task(
         status_code=status.HTTP_200_OK,
         content={
             "message": "Operation successful. Task has been started.",
+            "task": jsonable_encoder(updated_task)
+        },
+    )
+
+
+@router.post("/{id}/pause-task")
+async def pause_task(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Pause an task.
+    """
+    task = await crud.crud_task.get(db=db, id=id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    if (not crud.crud_user.is_admin(current_user)) and (task.created_by_user_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    if task.task_status_id in [constants.Status.KILLED, constants.Status.DONE]:
+        raise HTTPException(
+            status_code=400, detail="Operation failed. Task is already stopped.")
+    if task.task_status_id not in [constants.Status.RUNNING]:
+        raise HTTPException(
+            status_code=400, detail="Operation failed. Task is not running.")
+
+    task_data = jsonable_encoder(task)
+    task_data["task_status_id"] = constants.Status.PAUSED
+
+    obj_in = models.Task(**task_data)
+
+    updated_task = await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "Operation successful. Task has been paused.",
             "task": jsonable_encoder(updated_task)
         },
     )

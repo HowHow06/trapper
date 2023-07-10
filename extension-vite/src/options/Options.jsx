@@ -46,7 +46,8 @@ function App() {
   const isNewTask = !(
     task.id &&
     (task.taskStatusId === constants.TASK_STATUS.WAITING ||
-      (task.id && task.taskStatusId === constants.TASK_STATUS.RUNNING))
+      task.taskStatusId === constants.TASK_STATUS.PAUSED ||
+      task.taskStatusId === constants.TASK_STATUS.RUNNING)
   )
 
   const formik = useFormik({
@@ -127,7 +128,7 @@ function App() {
     return null
   }
 
-  const hasRunningTask = task.taskStatusId && task.taskStatusId !== constants.TASK_STATUS.WAITING
+  const hasRunningTask = task.taskStatusId && task.taskStatusId === constants.TASK_STATUS.RUNNING
 
   return (
     <main>
