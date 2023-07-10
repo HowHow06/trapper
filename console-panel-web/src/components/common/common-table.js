@@ -14,11 +14,18 @@ import {
 import { visuallyHidden } from '@mui/utils';
 import _get from 'lodash/get';
 import moment from 'moment';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { TASK_STATUS_NAME } from 'src/constants/variables';
 import { TimeUtils } from 'src/utils/time-utils';
+
+const statusMap = {
+  pending: 'warning',
+  delivered: 'success',
+  refunded: 'error',
+};
 
 const descendingComparator = (a, b, orderByAccessor) => {
   if (_get(b, orderByAccessor) < _get(a, orderByAccessor)) {
@@ -116,6 +123,14 @@ const CommonTable = ({
       const value = _get(dataItem, columnItem.accessor);
       return value ? TASK_STATUS_NAME[value] : '-';
     }
+    if (columnItem.type === 'vulnerability_severity') {
+      const value = _get(dataItem, columnItem.accessor);
+      return value ? (
+        <SeverityPill color={statusMap['delivered']}>{TASK_STATUS_NAME[value]}</SeverityPill>
+      ) : (
+        '-'
+      );
+    }
 
     return _get(dataItem, columnItem.accessor);
   };
@@ -126,13 +141,26 @@ const CommonTable = ({
         <TableCell
           key={`${index}-${dataItem.id}-${columnItem.accessor}`}
           sx={{ cursor: 'pointer' }}
-          onClick={() => {
-            if (itemHref) {
-              router.push(`/${itemHref}/${dataItem[identity]}`);
-            }
-          }}
         >
-          {renderTableColumn(dataItem, columnItem)}
+          {itemHref ? (
+            <NextLink
+              href={`${itemHref}/${dataItem[identity]}`}
+              style={{
+                textDecoration: 'none',
+              }}
+            >
+              <Box
+                className="MuiTableCell-root"
+                sx={{
+                  color: 'text.primary',
+                }}
+              >
+                {renderTableColumn(dataItem, columnItem)}
+              </Box>
+            </NextLink>
+          ) : (
+            renderTableColumn(dataItem, columnItem)
+          )}
         </TableCell>
       );
     });
