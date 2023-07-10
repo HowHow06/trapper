@@ -24,6 +24,7 @@ import { SEVERITY_COLOR_MAP, TASK_STATUS_NAME } from 'src/constants/variables';
 import { TimeUtils } from 'src/utils/time-utils';
 import { Scrollbar } from '../scrollbar';
 import { ExpandMoreButton } from './expand-more-button';
+import SearchBox from './search-box';
 
 const descendingComparator = (a, b, orderByAccessor) => {
   if (_get(b, orderByAccessor) < _get(a, orderByAccessor)) {
@@ -50,6 +51,8 @@ const CommonTable = ({
   noPagination = false,
   isLoading,
   onClickExpand = null,
+  noSearch,
+  searchPlaceHolder,
   ...rest
 }) => {
   const router = useRouter();
@@ -233,8 +236,13 @@ const CommonTable = ({
   const getFilteredData = ({ data, columns, query }) => {
     return data.filter((dataItem) => {
       for (const columnItem of columns) {
-        const value = _get(dataItem, columnItem.accessor);
-        if (value && value.toString().toUpperCase().indexOf(query.toUpperCase()) !== -1) {
+        const value = renderTableColumn(dataItem, columnItem);
+        const isString = typeof value === 'string' || value instanceof String;
+        if (
+          value &&
+          isString &&
+          value.toString().toUpperCase().indexOf(query.toUpperCase()) !== -1
+        ) {
           return true;
         }
       }
@@ -246,8 +254,8 @@ const CommonTable = ({
 
   return (
     <>
-      {/* {noSearch ? (
-        ''
+      {noSearch ? (
+        <></>
       ) : (
         <Box
           sx={{
@@ -262,7 +270,7 @@ const CommonTable = ({
             }}
           />
         </Box>
-      )} */}
+      )}
 
       <Card {...rest}>
         <Scrollbar>
