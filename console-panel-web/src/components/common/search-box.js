@@ -3,7 +3,7 @@ import { Card, IconButton, InputAdornment, OutlinedInput } from '@mui/material';
 import { useState } from 'react';
 
 const SearchBox = (props) => {
-  const { onSubmitSearch, placeholder = 'Search...' } = props;
+  const { onSubmitSearch, placeholder = 'Search here' } = props;
   const [searchKey, setSearchKey] = useState('');
 
   const handleSearchKeyChange = (event) => {
