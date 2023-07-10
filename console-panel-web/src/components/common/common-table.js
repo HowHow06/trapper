@@ -18,14 +18,9 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { TASK_STATUS_NAME } from 'src/constants/variables';
+import { STATUS_COLOR_MAP, TASK_STATUS_NAME } from 'src/constants/variables';
 import { TimeUtils } from 'src/utils/time-utils';
-
-const statusMap = {
-  pending: 'warning',
-  delivered: 'success',
-  refunded: 'error',
-};
+import { Scrollbar } from '../scrollbar';
 
 const descendingComparator = (a, b, orderByAccessor) => {
   if (_get(b, orderByAccessor) < _get(a, orderByAccessor)) {
@@ -77,7 +72,6 @@ const CommonTable = ({
 
   const renderTableHeader = ({ orderBy, order }) => {
     return columns.map((columnItem) => {
-      console.log('column item', columnItem);
       return (
         <TableCell key={columnItem.accessor}>
           <TableSortLabel
@@ -123,13 +117,18 @@ const CommonTable = ({
       const value = _get(dataItem, columnItem.accessor);
       return value ? TASK_STATUS_NAME[value] : '-';
     }
+
     if (columnItem.type === 'vulnerability_severity') {
       const value = _get(dataItem, columnItem.accessor);
       return value ? (
-        <SeverityPill color={statusMap['delivered']}>{TASK_STATUS_NAME[value]}</SeverityPill>
+        <SeverityPill color={STATUS_COLOR_MAP['delivered']}>{TASK_STATUS_NAME[value]}</SeverityPill>
       ) : (
         '-'
       );
+    }
+
+    if (typeof columnItem.accessor === 'function') {
+      return columnItem.accessor(dataItem);
     }
 
     return _get(dataItem, columnItem.accessor);
@@ -231,47 +230,49 @@ const CommonTable = ({
       )} */}
 
       <Card {...rest}>
-        <Box sx={{ minWidth: 500 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {renderTableHeader({ order, orderBy })}
-                {actions && actions.length > 0 && <TableCell key="actions">Actions</TableCell>}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredData.length === 0 && !isLoading && (
+        <Scrollbar>
+          <Box sx={{ minWidth: 500 }}>
+            <Table>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={columns.length + 1}>No data available</TableCell>
+                  {renderTableHeader({ order, orderBy })}
+                  {actions && actions.length > 0 && <TableCell key="actions">Actions</TableCell>}
                 </TableRow>
-              )}
-              {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={columns.length + 1}>Loading...</TableCell>
-                </TableRow>
-              )}
-              {(limit > 0 ? filteredData.slice(page * limit, page * limit + limit) : filteredData)
-                .sort(getComparator(order, orderBy))
-                .map((dataItem, dataIndex) => (
-                  <TableRow hover key={`row-${dataItem[identity]}`}>
-                    {renderTableRows(dataItem)}
-                    {renderActions(dataItem, dataIndex)}
+              </TableHead>
+              <TableBody>
+                {filteredData.length === 0 && !isLoading && (
+                  <TableRow>
+                    <TableCell colSpan={columns.length + 1}>No data available</TableCell>
                   </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </Box>
-        {!noPagination && (
-          <TablePagination
-            component="div"
-            count={filteredData.length}
-            rowsPerPage={limit}
-            page={page}
-            onPageChange={handlePageChange}
-            onRowsPerPageChange={handleLimitChange}
-            rowsPerPageOptions={[25, 50, 100, { label: 'All', value: -1 }]}
-          />
-        )}
+                )}
+                {isLoading && (
+                  <TableRow>
+                    <TableCell colSpan={columns.length + 1}>Loading...</TableCell>
+                  </TableRow>
+                )}
+                {(limit > 0 ? filteredData.slice(page * limit, page * limit + limit) : filteredData)
+                  .sort(getComparator(order, orderBy))
+                  .map((dataItem, dataIndex) => (
+                    <TableRow hover key={`row-${dataItem[identity]}`}>
+                      {renderTableRows(dataItem)}
+                      {renderActions(dataItem, dataIndex)}
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </Box>
+          {!noPagination && (
+            <TablePagination
+              component="div"
+              count={filteredData.length}
+              rowsPerPage={limit}
+              page={page}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleLimitChange}
+              rowsPerPageOptions={[25, 50, 100, { label: 'All', value: -1 }]}
+            />
+          )}
+        </Scrollbar>
       </Card>
     </>
   );
@@ -281,7 +282,7 @@ CommonTable.propTypes = {
   columns: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
-      accessor: PropTypes.string.isRequired,
+      accessor: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
     })
   ).isRequired,
   data: PropTypes.array.isRequired,

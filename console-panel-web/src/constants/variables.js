@@ -21,3 +21,9 @@ export const VULNERABILITY_TYPE = {
   STORED_XSS: 2,
   DOM_XSS: 3,
 };
+
+export const STATUS_COLOR_MAP = {
+  pending: 'warning',
+  delivered: 'success',
+  refunded: 'error',
+};
