@@ -1,8 +1,11 @@
+import asyncio
 import json
 import logging
+from datetime import datetime
 
-from app import scan_task
+from app import crud, models, scan_task
 from app.core.celery_app import celery_app
+from app.db.session import AsyncSessionLocal
 
 logger = logging.getLogger("trapper_server")
 logger.setLevel(logging.INFO)
@@ -52,3 +55,24 @@ def perform_scan_celery(scan_request):
     # else:  # when the status is NONE
     #     scan(package=package, task_id=task_id,
     #          create_user=create_user, status=status)
+
+
+@celery_app.task
+def change_scan_status(task_id, status_id):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    async def async_change_status(task_id, status_id):
+        async with AsyncSessionLocal() as db:
+            task = await crud.crud_task.get(db=db, id=task_id)
+            task_data = task.dict()
+            task_data["task_status_id"] = status_id
+            task_data["stopped_at"] = datetime.utcnow()
+
+            obj_in = models.Task(**task_data)
+
+            await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
+            return f"Change status of task {task_id} to {status_id}"
+
+    result = loop.run_until_complete(async_change_status(task_id, status_id))
+    return result

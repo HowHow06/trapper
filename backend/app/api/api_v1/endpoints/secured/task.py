@@ -6,7 +6,7 @@ from app import crud, models, schemas
 from app.api import deps
 from app.core import constants, request_util, task_util
 from app.models import User as UserModel
-from app.worker import perform_scan_celery
+from app.worker import change_scan_status, perform_scan_celery
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -259,11 +259,11 @@ async def stop_task(
     task_data = jsonable_encoder(task)
     # will turn to DONE when celery stopped, or last scan request stopped
     task_data["task_status_id"] = constants.Status.KILLED
-    task_data["stopped_at"] = datetime.utcnow()
 
     obj_in = models.Task(**task_data)
 
-    # TODO: stop celery here
+    # will be changed to DONE after all scanning requests are completed, because it is a queue
+    change_scan_status.delay(task_id=id, status_id=constants.Status.DONE)
 
     updated_task = await crud.crud_task.update(db=db, db_obj=task, obj_in=obj_in)
     return JSONResponse(
