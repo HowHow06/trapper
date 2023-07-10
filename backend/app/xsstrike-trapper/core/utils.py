@@ -60,14 +60,15 @@ def fillHoles2(original_array, new_array):
     filled_array = [0]*len(original_array)
 
     for new_num in new_array:
-        # Identify the position of the closest number in the original_array
-        closest_position = find_closest_position(original_array, new_num)
+        list_original_array = list(original_array)
+        # Identify the position of the closest number in the list_original_array
+        closest_position = find_closest_position(list_original_array, new_num)
 
         # Check if the position already has an element in the filled_array
         if filled_array[closest_position] != 0:
-            # If there is an existing element, compare which number (existing one or new one) is closer to the corresponding number in original_array
+            # If there is an existing element, compare which number (existing one or new one) is closer to the corresponding number in list_original_array
             existing_num = filled_array[closest_position]
-            main_num = original_array[closest_position]
+            main_num = list_original_array[closest_position]
 
             if abs(main_num - new_num) < abs(main_num - existing_num):
                 # If the new number is closer, update the corresponding position in the filled_array
@@ -75,6 +76,7 @@ def fillHoles2(original_array, new_array):
         else:
             # If there is no existing element, update the corresponding position in the filled_array
             filled_array[closest_position] = new_num
+    return filled_array
 
 
 # TRAPPER: new implementation
