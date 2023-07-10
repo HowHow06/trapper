@@ -98,10 +98,14 @@ const Page = () => {
       accessor: 'scan_request.request_endpoint',
     },
     {
-      name: 'Payload',
+      name: 'Request Method',
       accessor: (data) => {
-        const payload = data.payload;
-        return payload.replace(/\033\[\d+m/g, ''); // remove color code for terminal
+        if (!data.scan_request?.request_information) {
+          return '-';
+        }
+        const requestInformation = JSON.parse(data.scan_request.request_information);
+        console.log('requestInformation:', requestInformation);
+        return requestInformation?.http_method || '-';
       },
     },
     {
@@ -112,6 +116,13 @@ const Page = () => {
         }
         const vulnerability_id = data.vulnerability_id;
         return vulnerabilites[vulnerability_id]?.[0]?.name || '-';
+      },
+    },
+    {
+      name: 'Payload',
+      accessor: (data) => {
+        const payload = data.payload;
+        return payload.replace(/\033\[\d+m/g, ''); // remove color code for terminal
       },
     },
     // {
@@ -156,7 +167,7 @@ const Page = () => {
             {/* Groups Section */}
             <Box sx={{ mt: 3 }}>
               <Stack spacing={1}>
-                <Typography variant="h5">Vulnerabilities Detected: </Typography>
+                <Typography variant="h5">{results.length} vulnerabilities detected </Typography>
               </Stack>
               <Box sx={{ mt: 3 }}>
                 <CommonTable
