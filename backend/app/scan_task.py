@@ -26,6 +26,7 @@ def print_command(request_package, request_id):
 
 
 def scan(request_package, request_id):
+    # TODO: change request status to running, and in the trapperXsstrike, change the request to done after scanning
     logger.info(
         "Trapper scanning has started with request id: {}".format(request_id))
     try:
