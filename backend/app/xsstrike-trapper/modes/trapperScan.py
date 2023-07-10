@@ -45,10 +45,13 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
                     # TRAPPER: will print the vulnerable code in the response html
                     # TODO: store to database
                     logger.no_format(line, level='good')
+                    index = line.find(" ")
+                    dom_payload = line[index+1:]  # remove the heading number
                     dom_result = schemas.ResultCreate(
                         request_id=trapper_celery_request_id,
                         vulnerability_id=constants.Vulnerability.DOM_XSS,
-                        payload=line,
+                        # remove color code for terminal
+                        payload=re.sub(r'\033\[\d+m', '', dom_payload),
                     )
                     await crud.crud_result.create(db, obj_in=dom_result)
 
