@@ -1,5 +1,6 @@
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
-import { Card, IconButton, InputAdornment, OutlinedInput } from '@mui/material';
+import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
+import { Card, IconButton, InputAdornment, OutlinedInput, SvgIcon } from '@mui/material';
 import { useState } from 'react';
 
 const SearchBox = (props) => {
@@ -30,13 +31,13 @@ const SearchBox = (props) => {
         value={searchKey}
         fullWidth
         placeholder={placeholder}
-        // startAdornment={
-        //   <InputAdornment position="start">
-        //     <SvgIcon color="action" fontSize="small">
-        //       <MagnifyingGlassIcon />
-        //     </SvgIcon>
-        //   </InputAdornment>
-        // }
+        startAdornment={
+          <InputAdornment position="start">
+            <SvgIcon color="action" fontSize="small">
+              <MagnifyingGlassIcon />
+            </SvgIcon>
+          </InputAdornment>
+        }
         endAdornment={
           <InputAdornment position="end">
             <IconButton
@@ -44,7 +45,7 @@ const SearchBox = (props) => {
               sx={{ visibility: searchKey ? 'visible' : 'hidden' }}
               onClick={handleClearClick}
             >
-              <XMarkIcon height={15} />
+              <XMarkIcon height="1.25rem" />
             </IconButton>
           </InputAdornment>
         }
