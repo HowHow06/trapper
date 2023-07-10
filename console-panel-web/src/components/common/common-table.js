@@ -1,7 +1,9 @@
+import ChevronDownIcon from '@heroicons/react/24/solid/ChevronDownIcon';
 import {
   Box,
   Button,
   Card,
+  Collapse,
   Stack,
   Table,
   TableBody,
@@ -17,10 +19,11 @@ import moment from 'moment';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { STATUS_COLOR_MAP, TASK_STATUS_NAME } from 'src/constants/variables';
 import { TimeUtils } from 'src/utils/time-utils';
 import { Scrollbar } from '../scrollbar';
+import { ExpandMoreButton } from './expand-more-button';
 
 const descendingComparator = (a, b, orderByAccessor) => {
   if (_get(b, orderByAccessor) < _get(a, orderByAccessor)) {
@@ -46,6 +49,7 @@ const CommonTable = ({
   actions,
   noPagination = false,
   isLoading,
+  onClickExpand = null,
   ...rest
 }) => {
   const router = useRouter();
@@ -54,6 +58,17 @@ const CommonTable = ({
   const [query, setQuery] = useState('');
   const [order, setOrder] = useState('');
   const [orderBy, setOrderBy] = useState('');
+  const [expandedRowIds, setExpandedRowIds] = useState([]);
+
+  const handleRowExpandClick = (id) => {
+    setExpandedRowIds((prevState) => {
+      if (prevState.includes(id)) {
+        return prevState.filter((rowId) => rowId !== id);
+      } else {
+        return [...prevState, id];
+      }
+    });
+  };
 
   const handleLimitChange = (event) => {
     setLimit(parseInt(event.target.value, 10));
@@ -195,6 +210,24 @@ const CommonTable = ({
     );
   };
 
+  const renderExpandAction = (dataItem, dataIndex) => {
+    return (
+      <TableCell>
+        <ExpandMoreButton
+          expand={expandedRowIds.includes(dataItem[identity])}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent event bubbling
+            handleRowExpandClick(dataItem[identity]);
+          }}
+          aria-expanded={expandedRowIds.includes(dataItem[identity])}
+          aria-label="show more"
+        >
+          <ChevronDownIcon height={20} />
+        </ExpandMoreButton>
+      </TableCell>
+    );
+  };
+
   const getFilteredData = ({ data, columns, query }) => {
     return data.filter((dataItem) => {
       for (const columnItem of columns) {
@@ -237,6 +270,7 @@ const CommonTable = ({
                 <TableRow>
                   {renderTableHeader({ order, orderBy })}
                   {actions && actions.length > 0 && <TableCell key="actions">Actions</TableCell>}
+                  {onClickExpand && <TableCell key="expand"></TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -253,10 +287,38 @@ const CommonTable = ({
                 {(limit > 0 ? filteredData.slice(page * limit, page * limit + limit) : filteredData)
                   .sort(getComparator(order, orderBy))
                   .map((dataItem, dataIndex) => (
-                    <TableRow hover key={`row-${dataItem[identity]}`}>
-                      {renderTableRows(dataItem)}
-                      {renderActions(dataItem, dataIndex)}
-                    </TableRow>
+                    <Fragment key={`row-${dataItem[identity]}`}>
+                      <TableRow
+                        hover
+                        sx={{
+                          ...(onClickExpand && expandedRowIds.includes(dataItem[identity])
+                            ? {
+                                backgroundColor: 'action.hover',
+                              }
+                            : {}),
+                        }}
+                        onClick={
+                          onClickExpand ? () => handleRowExpandClick(dataItem[identity]) : undefined
+                        }
+                      >
+                        {renderTableRows(dataItem)}
+                        {renderActions(dataItem, dataIndex)}
+                        {onClickExpand && renderExpandAction(dataItem, dataIndex)}
+                      </TableRow>
+                      {onClickExpand && (
+                        <TableRow>
+                          <TableCell sx={{ p: 0 }} colSpan={6}>
+                            <Collapse
+                              in={expandedRowIds.includes(dataItem[identity])}
+                              timeout="auto"
+                              unmountOnExit
+                            >
+                              {onClickExpand(dataItem)}
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </Fragment>
                   ))}
               </TableBody>
             </Table>
