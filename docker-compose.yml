@@ -78,3 +78,4 @@ services:
     environment:
       - CURRENT_ENVIRONMENT=DOCKER # to determine how to get the environment variables, refer to config.py
       - CELERY_BROKER_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@queue:5672 # need to explicitly set to `queue` instead of `localhost`
+      - MARIADB_SERVER=db
