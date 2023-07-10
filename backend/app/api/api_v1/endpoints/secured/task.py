@@ -6,6 +6,7 @@ from app import crud, models, schemas
 from app.api import deps
 from app.core import constants, request_util, task_util
 from app.models import User as UserModel
+from app.worker import perform_scan_celery
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -287,7 +288,7 @@ async def create_scan_request(
 
     scan_request_data = jsonable_encoder(scan_request_in)
     scan_request_data["original_request_data"] = json.dumps(
-        scan_request_in.original_request_data.__dict__)
+        scan_request_in.original_request_data)
     scan_request_data["task_id"] = task_id
     scan_request_data["scan_status_id"] = constants.Status.WAITING
     scan_request_data["request_endpoint"] = request_information['url']
@@ -300,4 +301,5 @@ async def create_scan_request(
         db=db, obj_in=obj_in)
 
     # TODO: start celery app scan here
+    perform_scan_celery.delay(jsonable_encoder(scan_request))
     return scan_request

@@ -1,16 +1,7 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel
-
-
-class OriginalRequestData(BaseModel):
-    requestid: Optional[str]
-    type: Optional[str]
-    url: Optional[str]
-    method: Optional[str]
-    parser: Optional[str]
-    headers: Optional[str]
 
 
 # Shared properties
@@ -20,7 +11,7 @@ class ScanRequestBase(BaseModel):
 
 # Properties to receive via API on creation
 class ScanRequestCreate(ScanRequestBase):
-    original_request_data: OriginalRequestData
+    original_request_data: dict[Any, Any]
     task_access_key: str  # need to pass the task access key when creating new scan request
 
 
