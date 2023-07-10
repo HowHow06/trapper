@@ -1,16 +1,8 @@
-import json
-from datetime import datetime
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional
 
 from app import crud, models, schemas
 from app.api import deps
-from app.core import constants, request_util, task_util
-from app.models import User as UserModel
-from app.worker import change_scan_status, perform_scan_celery
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from sqlalchemy import or_
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
