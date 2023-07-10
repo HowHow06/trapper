@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import api from 'src/api';
 import CommonTable from 'src/components/common/common-table';
 import InfoList from 'src/components/common/info-list';
+import { SeverityPill } from 'src/components/severity-pill';
+import { SEVERITY_COLOR_MAP, SEVERITY_NAME } from 'src/constants/variables';
 import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
 import { isApiSuccess } from 'src/utils/api-call';
 
@@ -104,7 +106,6 @@ const Page = () => {
           return '-';
         }
         const requestInformation = JSON.parse(data.scan_request.request_information);
-        console.log('requestInformation:', requestInformation);
         return requestInformation?.http_method || '-';
       },
     },
@@ -116,6 +117,24 @@ const Page = () => {
         }
         const vulnerability_id = data.vulnerability_id;
         return vulnerabilites[vulnerability_id]?.[0]?.name || '-';
+      },
+    },
+    {
+      name: 'Severity Level',
+      accessor: (data) => {
+        if (isEmpty(vulnerabilites)) {
+          return '-';
+        }
+        const vulnerability_id = data.vulnerability_id;
+        const vulnerability = vulnerabilites[vulnerability_id]?.[0];
+        if (!vulnerability) {
+          return '-';
+        }
+        return (
+          <SeverityPill color={SEVERITY_COLOR_MAP[vulnerability.severity_level_id]}>
+            {SEVERITY_NAME[vulnerability.severity_level_id]}
+          </SeverityPill>
+        );
       },
     },
     {
@@ -140,6 +159,33 @@ const Page = () => {
   if (isInvalidId) {
     router.push('/404');
   }
+
+  const expandResultRow = (data) => {
+    if (isEmpty(vulnerabilites)) {
+      return '-';
+    }
+    const vulnerability_id = data.vulnerability_id;
+    const vulnerability = vulnerabilites[vulnerability_id]?.[0];
+    return (
+      <Stack
+        sx={{
+          py: 3,
+          px: 4,
+          backgroundColor: 'action.hover',
+        }}
+        spacing={2}
+      >
+        <Box>
+          <Typography variant="subtitle2">About this vulnerability:</Typography>
+          <Typography variant="body2">{vulnerability.description}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="subtitle2">Patch Suggestion: </Typography>
+          <Typography variant="body2">{vulnerability.patch_suggestion}</Typography>
+        </Box>
+      </Stack>
+    );
+  };
 
   return (
     <>
@@ -175,6 +221,7 @@ const Page = () => {
                   data={results}
                   // itemHref={`/communities/${communityId}/groups`}
                   identity="id"
+                  onClickExpand={expandResultRow}
                 />
               </Box>
             </Box>

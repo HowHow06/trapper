@@ -2,7 +2,7 @@ import { Card, CardHeader, Divider, List, ListItem, ListItemText, Typography } f
 import _get from 'lodash/get';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { STATUS_COLOR_MAP, TASK_STATUS_NAME } from 'src/constants/variables';
+import { SEVERITY_COLOR_MAP, TASK_STATUS_NAME } from 'src/constants/variables';
 import { TimeUtils } from 'src/utils/time-utils';
 
 const InfoList = ({ title, subtitle, data, columns, ...rest }) => {
@@ -47,7 +47,9 @@ const InfoList = ({ title, subtitle, data, columns, ...rest }) => {
     if (column.type === 'vulnerability_severity') {
       const value = _get(data, column.accessor);
       return value ? (
-        <SeverityPill color={STATUS_COLOR_MAP['delivered']}>{TASK_STATUS_NAME[value]}</SeverityPill>
+        <SeverityPill color={SEVERITY_COLOR_MAP['delivered']}>
+          {TASK_STATUS_NAME[value]}
+        </SeverityPill>
       ) : (
         '-'
       );

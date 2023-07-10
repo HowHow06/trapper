@@ -22,8 +22,14 @@ export const VULNERABILITY_TYPE = {
   DOM_XSS: 3,
 };
 
-export const STATUS_COLOR_MAP = {
-  pending: 'warning',
-  delivered: 'success',
-  refunded: 'error',
+export const SEVERITY_COLOR_MAP = {
+  5: 'info',
+  6: 'warning',
+  7: 'error',
+};
+
+export const SEVERITY_NAME = {
+  5: 'Low',
+  6: 'Medium',
+  7: 'High',
 };

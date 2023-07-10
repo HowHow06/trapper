@@ -20,7 +20,7 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { Fragment, useState } from 'react';
-import { STATUS_COLOR_MAP, TASK_STATUS_NAME } from 'src/constants/variables';
+import { SEVERITY_COLOR_MAP, TASK_STATUS_NAME } from 'src/constants/variables';
 import { TimeUtils } from 'src/utils/time-utils';
 import { Scrollbar } from '../scrollbar';
 import { ExpandMoreButton } from './expand-more-button';
@@ -136,7 +136,9 @@ const CommonTable = ({
     if (columnItem.type === 'vulnerability_severity') {
       const value = _get(dataItem, columnItem.accessor);
       return value ? (
-        <SeverityPill color={STATUS_COLOR_MAP['delivered']}>{TASK_STATUS_NAME[value]}</SeverityPill>
+        <SeverityPill color={SEVERITY_COLOR_MAP['delivered']}>
+          {TASK_STATUS_NAME[value]}
+        </SeverityPill>
       ) : (
         '-'
       );
