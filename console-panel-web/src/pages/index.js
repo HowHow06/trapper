@@ -29,9 +29,6 @@ const Page = () => {
           setTasks(tasks);
         }
       };
-      if (ignore.current) {
-        return;
-      }
 
       const fetchRequests = async () => {
         const response = await api.getScanRequests({});
