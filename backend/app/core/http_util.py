@@ -219,3 +219,20 @@ class AcceptCharset():
 class HttpMethod():
     GET = "get"
     POST = "post"
+
+
+def json_to_urlencoded(data):
+    """
+    将{'B1': '信息', 'id': '1', 'msg': 'abc'} 转换成B1=信息&id=1&msg=abc
+    :param json: 
+    :return: 
+    """
+    # import sys
+    # reload(sys)
+    # sys.setdefaultencoding('utf8')
+    result = ""
+    for key, value in data.items():
+        temp_data = "{}={}".format(key, value)
+        result = "{}&{}".format(
+            result, temp_data) if result != "" else temp_data
+    return result
