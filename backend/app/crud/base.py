@@ -34,12 +34,22 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     # where_clause = or_(Task.status_id == 1, Task.status_id == 2)
     # result = await crud.get_multi(db, where=where_clause)
     async def get_multi(self, db: AsyncSession, skip: int = 0, limit: int = 100, where=None, sort_by: Optional[str] = None,
-                        desc_order: bool = False) -> List[ModelType]:
+                        desc_order: bool = False, join=None) -> List[ModelType]:
         conditions = [self.model.deleted_at.is_(None)]
 
         if where is not None:
             conditions.append(where)
-        statement = select(self.model).filter(
+
+        statement = select(self.model)
+        if join is not None and isinstance(join, list):
+            for singleJoin in join:
+                statement = statement.join(singleJoin)
+                conditions.append(singleJoin.deleted_at.is_(None))
+        elif join is not None:
+            statement = statement.join(join)
+            conditions.append(join.deleted_at.is_(None))
+
+        statement = statement.filter(
             and_(*conditions)).offset(skip).limit(limit)
 
         if sort_by is not None:
