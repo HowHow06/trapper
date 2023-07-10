@@ -42,6 +42,7 @@ const OverviewRecentTasks = (props) => {
             identity="id"
             noPagination
             isLoading={isLoading}
+            noSearch
           />
         </Box>
       </Scrollbar>
