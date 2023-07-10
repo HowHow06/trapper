@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-import Auth from './auth';
 import logger from 'src/utils/logger';
+import Auth from './auth';
+import Result from './result';
+import ScanRequest from './scanRequest';
+import Task from './task';
 
 export const axiosInstance = axios.create({
   baseURL: process.env.API_URL,
@@ -39,6 +42,9 @@ axiosInstance.interceptors.response.use(
 
 export const api = {
   ...Auth(axiosInstance),
+  ...ScanRequest(axiosInstance),
+  ...Task(axiosInstance),
+  ...Result(axiosInstance),
 };
 
 export default api;
