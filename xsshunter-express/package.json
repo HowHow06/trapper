@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
     "start": "node server.js",
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx,json,css,scss,md}"
   },
@@ -35,6 +36,7 @@
     "vue-moment": "^4.1.0"
   },
   "devDependencies": {
+    "nodemon": "^3.0.1",
     "prettier": "^2.7.1"
   }
 }
