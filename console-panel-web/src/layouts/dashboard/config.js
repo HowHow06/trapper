@@ -33,7 +33,7 @@ export const items = [
     ),
   },
   {
-    title: 'Logout',
+    title: 'Sign Out',
     icon: (
       <SvgIcon fontSize="small">
         <ArrowLeftOnRectangleIcon />

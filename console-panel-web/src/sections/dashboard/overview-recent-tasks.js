@@ -57,7 +57,6 @@ const OverviewRecentTasks = (props) => {
           }
           size="small"
           variant="text"
-          // TODO: navigate to tasks
           onClick={() => {
             router.push('/tasks');
           }}
