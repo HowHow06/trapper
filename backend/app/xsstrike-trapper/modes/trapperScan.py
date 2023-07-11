@@ -1,11 +1,12 @@
 import copy
 import re
-from urllib.parse import quote, unquote, urlparse
+from urllib.parse import unquote, urlparse
 
 import core.config
 from app import crud, schemas
 from app.core import constants
 from app.db.session import AsyncSessionLocal, get_async_db_url
+from core.blindPayloadUtils import PayloadGenerator
 from core.checker import checker
 from core.colors import end, green, que
 from core.config import minEfficiency, xsschecker
@@ -18,10 +19,11 @@ from core.requester import requester
 from core.utils import getParams, getUrl, getVar
 from core.wafDetector import wafDetector
 
+payload_generator = PayloadGenerator()
 logger = setup_logger(__name__)
 
 
-async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, trapper_celery_request_id):
+async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, trapper_celery_request_id, trapperBlindXSSRequest):
     async with AsyncSessionLocal() as db:
         GET, POST = (False, True) if paramData else (True, False)
         # If the user hasn't supplied the root url with http(s), we will handle it
@@ -72,6 +74,27 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
             logger.error('WAF detected: %s%s%s' % (green, WAF, end))
         else:
             logger.good('WAF Status: %sOffline%s' % (green, end))
+
+        # inject trapper blind xss request
+        if trapperBlindXSSRequest:
+            logger.info('Has trapperBlindXSSRequest!')
+            for paramName in params.keys():
+                logger.info('Looking to inject: %s' % paramName)
+                paramsCopy = copy.deepcopy(params)
+                for method_name in dir(PayloadGenerator):
+                    # Ignore methods starting with underscore, those are usually private methods or Python built-ins
+                    if not method_name.startswith('_'):
+                        method = getattr(payload_generator, method_name)
+                        if callable(method):
+                            blind_payload = trapperBlindXSSRequest.replace(
+                                '[request_id]', trapper_celery_request_id).replace(
+                                '[payload_type]', method_name)
+                            blind_payload = method(blind_payload)
+                            paramsCopy[paramName] = blind_payload
+                            logger.info(
+                                'Injecting the URL %s with "%s" payload' % (url, method_name))
+                            requester(url, paramsCopy, headers,
+                                      GET, delay, timeout)
 
         for paramName in params.keys():
             paramsCopy = copy.deepcopy(params)

@@ -10,7 +10,7 @@ import sys
 import core.config
 import core.log
 from core.colors import bad, end, info, red, white
-from core.config import blindPayload
+from core.config import blindPayload, trapperBlindXSSRequest
 from core.encoders import base64
 from core.photon import photon
 from core.prompt import prompt
@@ -181,7 +181,7 @@ elif not recursive and not args_seeds:
         # use this because the trapper scan is an async function
         loop = asyncio.get_event_loop()
         loop.run_until_complete(trapper_scan(target, paramData, encoding, headers,
-                                             delay, timeout, skipDOM, skip, trapper_celery_request_id))
+                                             delay, timeout, skipDOM, skip, trapper_celery_request_id, trapperBlindXSSRequest))
 else:
     if target:
         seedList.append(target)

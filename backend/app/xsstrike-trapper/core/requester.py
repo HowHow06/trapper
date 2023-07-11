@@ -1,12 +1,13 @@
 import random
-import requests
 import time
-from urllib3.exceptions import ProtocolError
 import warnings
+from urllib.parse import quote, urlencode
 
 import core.config
-from core.utils import converter, getVar
+import requests
 from core.log import setup_logger
+from core.utils import converter, getVar
+from urllib3.exceptions import ProtocolError
 
 logger = setup_logger(__name__)
 
@@ -34,11 +35,13 @@ def requester(url, data, headers, GET, delay, timeout):
     logger.debug_json('Requester headers:', headers)
     try:
         if GET:
-            response = requests.get(url, params=data, headers=headers,
+            url = f"{url}?{urlencode(data, quote_via=quote)}"
+            # if pass the data as params, will quote whitespace ' ' as '+', which is not desired in trapper-xsstrike
+            response = requests.get(url, headers=headers,
                                     timeout=timeout, verify=False, proxies=core.config.proxies)
         elif getVar('jsonData'):
             response = requests.post(url, json=data, headers=headers,
-                                    timeout=timeout, verify=False, proxies=core.config.proxies)
+                                     timeout=timeout, verify=False, proxies=core.config.proxies)
         else:
             response = requests.post(url, data=data, headers=headers,
                                      timeout=timeout, verify=False, proxies=core.config.proxies)
