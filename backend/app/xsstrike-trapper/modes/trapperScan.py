@@ -45,10 +45,11 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
                 logger.red_line(level='good')
                 for line in highlighted:
                     # TRAPPER: will print the vulnerable code in the response html
-                    # TODO: store to database
                     logger.no_format(line, level='good')
                     index = line.find(" ")
                     dom_payload = line[index+1:]  # remove the heading number
+
+                    # store to db
                     dom_result = schemas.ResultCreate(
                         request_id=trapper_celery_request_id,
                         vulnerability_id=constants.Vulnerability.DOM_XSS,
@@ -152,11 +153,11 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
                             vulnerability_id=constants.Vulnerability.REFLECTED_XSS,
                             payload=loggerVector,
                         )
+                        # store to db
                         await crud.crud_result.create(db, obj_in=reflected_result)
                         quit()
 
                         # if not skip:
-                        #     # TODO: store to database
                         #     choice = input(
                         #         '%s Would you like to continue scanning? [y/N] ' % que).lower()
                         #     if choice != 'y':

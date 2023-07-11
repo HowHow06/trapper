@@ -4,13 +4,10 @@ from urllib import parse
 
 from app.core.http_util import ContentType, HttpMethod
 
-# TODO: change to english comment
-
 
 class BaseTrafficParser:
-    # 原生流量格式
+
     DEAFAULT_PARSER = "raw"
-    # 浏览器插件流量格式
     CHROME_PARSER = "chrome-plugin"
 
     DIGITAL = (1, 'trapper_int')
@@ -20,13 +17,13 @@ class BaseTrafficParser:
     FLOAT = (5, 'trapper_float')
 
     """
-    流量解析器，chrome插件获取的流量和http请求获取的流量不太一样
+    Traffic parser, the traffic obtained from the Chrome plugin is not quite the same as the traffic obtained from HTTP requests
     """
 
     @staticmethod
     def _parse_get_parameter(url):
         """
-        解析http get请求参数
+        Parse http get request parameters
         :return: 
         """
         result = dict()
@@ -47,7 +44,7 @@ class BaseTrafficParser:
     @staticmethod
     def _parse_post_parameter(data, content_type):
         """
-        解析post参数，主要和content_type有关
+        Parse post parameters
         :param data: 
         :return: 
         """
@@ -58,7 +55,7 @@ class BaseTrafficParser:
         elif ContentType.ResourceContentType.JSON in content_type.lower():
             return json.loads(data)
         elif ContentType.ResourceContentType.XML in content_type.lower():
-            return data  # 暂时不支持
+            return data  # not supported yet
         elif ContentType.ResourceContentType.FORM in content_type.lower():
             filename = re.findall('filename="([\S\s]*)"', data, re.S)[0]
             return {'filename': filename}
@@ -73,12 +70,7 @@ class BaseTrafficParser:
     @staticmethod
     def get_parameter(url, data=None, http_method=HttpMethod.GET, content_type=None):
         """
-        解析参数，主要目的是为了去重使用
-        :param url: 
-        :param data: get 请求下为None
-        :param http_method: 
-        :param content_type: 
-        :return: 
+        Parse parameters
         """
 
         if http_method and http_method.lower() == HttpMethod.GET:
@@ -89,7 +81,7 @@ class BaseTrafficParser:
     @staticmethod
     def _replace_param_val_to_identification(http_parameter):
         """
-        替换成参数值为 trapper_int
+        Replace parameters value to trapper_int e.g.
         :param http_parameter: 
         :return: 
         """
@@ -102,7 +94,7 @@ class BaseTrafficParser:
     @staticmethod
     def simplify_request(url, data=None, http_method=HttpMethod.GET, content_type=None):
         """
-        解析请求，并带上分类标记
+        Parse request，extract additional information like method, url, content type
         :param url: 
         :param data: 
         :param http_method: 
@@ -132,7 +124,7 @@ class BaseTrafficParser:
     @staticmethod
     def _simplify_get_request(url):
         """
-        解析请求，并带上分类标记，解析get请求
+        Parse get request
         :param data: 
         :param http_method: 
         :param content_type: 
@@ -156,7 +148,7 @@ class BaseTrafficParser:
     @staticmethod
     def _simplify_post_request_default(data):
         """
-        对 application/x-www-form-urlencoded类型参数解析
+        Parse application/x-www-form-urlencoded content type
         :param data: 
         :param http_method: 
         :param content_type: 
@@ -179,7 +171,7 @@ class BaseTrafficParser:
     @staticmethod
     def _simplify_post_request_json(data):
         """
-        对 application/json 类型参数解析
+        Parse application/json content type
         :param data: 
         :return: 
         """
@@ -188,7 +180,7 @@ class BaseTrafficParser:
     @staticmethod
     def _simplify_post_request_form(data):
         """
-        上传文件 类型参数解析 multipart/form-data; boundary=----WebKitFormBoundaryH0TGOzR6zJhOJSVB
+        Parse multipart/form-data; boundary=----WebKitFormBoundaryH0TGOzR6zJhOJSVB
         :return: 
         """
         result_parameter = ""
@@ -209,7 +201,7 @@ class BaseTrafficParser:
 
     def _simplify_post_request(url, data, http_method, content_type):
         """
-        解析请求，并带上分类标记，解析get请求
+        Parse post request
         :param data: 
         :param http_method: 
         :param content_type: 
@@ -234,12 +226,12 @@ class BaseTrafficParser:
         """
         str1 = '{"name":{"pass": {"bb": 12222, "aa": {"hello": "xxx"}}}, "hello": "ssss"}'
         str2 = ```
-        {"video":{"id":"29BA6ACE7A9427489C33DC5901307461","title":"体验课01","desp":"","tags":" ","duration":503,"category":"07AD1E11DBE6FDFC","image":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0.jpg","imageindex":0,"image-alternate":[{"index":0,"url":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0/0.jpg"},{"index":1,"url":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0/1.jpg"},{"index":2,"url":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0/2.jpg"},{"index":3,"url":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0/3.jpg"}]}}
+        {"video":{"id":"29BA6ACE7A9427489C33DC5901307461","title":"class01","desp":"","tags":" ","duration":503,"category":"07AD1E11DBE6FDFC","image":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0.jpg","imageindex":0,"image-alternate":[{"index":0,"url":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0/0.jpg"},{"index":1,"url":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0/1.jpg"},{"index":2,"url":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0/2.jpg"},{"index":3,"url":"http://2.img.bokecc.com/comimage/0DD1F081022C163E/2016-03-09/29BA6ACE7A9427489C33DC5901307461-0/3.jpg"}]}}
         ```
         str3 = '{"name":{"pass": [{"bb":"xxx", "aaa": "bb"}, {"bb":"xxx34444444", "aaa": "bb"}]}, "hello": "ssss"}'
         str = '{"name":[{"bb":"xxx"}]}'
         str4 = '{"name":"chenming","whoamo":"11123333"}'
-        递归解决json解析问题，解析多重json
+        Parse JSON with recursive
         :param str: 
         :return: 
         """
@@ -261,7 +253,7 @@ class BaseTrafficParser:
     @staticmethod
     def _set_type(result, temp_json):
         """
-        set type 主要被get_json_parameter调用
+        mainly called by get_json_parameter
         :param result: 
         :param temp_json: 
         :return: 
@@ -367,8 +359,8 @@ class BaseTrafficParser:
     @staticmethod
     def add_poc_data(url, data, http_method, content_type, poc):
         """
-        在原来数据的基础上替换成poc数据
-        :param url: get类型下完整url post为请求数据
+        change the original parameter to poc
+        :param url: 
         :param http_method: 
         :param content_type: 
         :param poc: 

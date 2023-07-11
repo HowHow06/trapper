@@ -17,12 +17,10 @@ __all__ = ["is_uploadordownload", "remove_http", "get_host_port", "get_host_port
 DEFAULT_TIMEOUT = 10
 DEFAULT_CHUNK_SIZE = 512
 
-# TODO: change to english comment
-
 
 def is_uploadordownload(package):
     """
-    是否为上传类
+    Determine whether it's an upload type
     :param package: 
     :return: 
     """
@@ -49,8 +47,8 @@ def download_file(url, save_fp, timeout=DEFAULT_TIMEOUT, chunk_size=DEFAULT_CHUN
 
 def remove_http(url):
     """
-    1.先判断是否是已 http或者https开头
-    将http://xxxx/中的主机名提取出来
+    1. First, determine whether it starts with http or https
+    Extract the hostname from http://xxxx/
     :return: 
     """
     domain = re.findall(r'(?:http[s]?://)?([\w\.\-]*)/*', url)
@@ -63,7 +61,7 @@ def remove_http(url):
 
 def get_host_port(url, default_port=80):
     """
-    从url中提取出域名和端口,例如 http://xxxx:8090
+    Extract domain name and port from the url, for example, http://xxxx:8090
     :param url: 
     :return: 
     """
@@ -78,7 +76,7 @@ def get_host_port(url, default_port=80):
 
 def get_host_port_protocol(url, default_port=80):
     """
-    提取host port protocol
+    Extract host, port, protocol
     :param url: 
     :param default_port: 
     :return: 
@@ -93,7 +91,7 @@ def get_host_port_protocol(url, default_port=80):
 
 def get_top_domain(url):
     """
-    通过url获得顶级域名
+    Obtain the top-level domain from the url
     :param url: 
     :return: 
     """
@@ -120,7 +118,7 @@ def url_encode(str):
 
 def get_parent_route(url):
     """
-    获得父级路由
+    Get the parent route
     :param url: 
     :return: 
     """
@@ -138,7 +136,7 @@ class ContentType:
     NAME = "Content-Type"
 
     class ResourceContentType:
-        # 静态资源类型
+        # static resource type
         PNG = "image/png"
         TIF = "image/tiff"
         FAX = "image/fax"
@@ -162,7 +160,7 @@ class ContentType:
         WRM = "video/x-ms-wm"
         WMX = "video/x-ms-wmx"
         WVX = "video/x-ms-wvx"
-        # 非静态资源类型
+        # non-static resource type
         UPLOAD_FORM = "multipart/form-data; boundary="
         DOWNLOAD = "application/octet-stream"
         JSON = "application/json"
@@ -178,7 +176,7 @@ class ContentType:
 
 class StatusCode:
     """
-    响应状态码
+    Response status code
     """
     HTTP_OK = 200
     HTTP_CREATED = 201
@@ -200,7 +198,7 @@ class UserAgent:
 
     class MobileDevices:
         """
-        移动设备的UA
+        Mobile UA
         """
         ANDROID = "Dalvik/2.1.0 (Linux; U; Android 5.1; OPPO R9m Build/LMY47I)"
 
@@ -223,7 +221,7 @@ class HttpMethod():
 
 def json_to_urlencoded(data):
     """
-    将{'B1': '信息', 'id': '1', 'msg': 'abc'} 转换成B1=信息&id=1&msg=abc
+    convert {'B1': 'msghere', 'id': '1', 'msg': 'abc'} to B1=msghere&id=1&msg=abc
     :param json: 
     :return: 
     """

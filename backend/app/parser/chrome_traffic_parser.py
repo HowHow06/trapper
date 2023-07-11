@@ -5,13 +5,12 @@ from app.core.http_util import ContentType, HttpMethod
 from app.parser.base_traffic_parser import BaseTrafficParser
 
 
-# TODO: change to english comment
 class ChromeTrafficParser(BaseTrafficParser):
 
     @staticmethod
     def get_parameter(url, data, http_method, content_type):
         """
-        get和BaseTrafficParser一致, post不一致
+        get is same as BaseTrafficParser
         :param url: 
         :param data: 
         :param http_method: 
@@ -27,7 +26,7 @@ class ChromeTrafficParser(BaseTrafficParser):
     @staticmethod
     def _parse_post_parameter(data, content_type):
         """
-        解析chrome抓取到的流量
+        post is not the same as BaseTrafficParser
         :param data: 
         :param content_type: 
         :return: 
@@ -39,7 +38,7 @@ class ChromeTrafficParser(BaseTrafficParser):
             # data = "\"{\\\"username\\\":\\\"admin\\\",\\\"password\\\":\\\"passss\\\"}\"" //application/json
             return json.loads(data)
         elif content_type == ContentType.ResourceContentType.XML:
-            # 暂不支持，去除"符号
+            # removing " is not supported yet
             data = re.findall(u'"(.*?)"', data, re.S)[0]
             return data
         elif content_type == ContentType.ResourceContentType.FORM:
@@ -49,14 +48,6 @@ class ChromeTrafficParser(BaseTrafficParser):
 
     @staticmethod
     def simplify_request(url, data=None, http_method=HttpMethod.GET, content_type=None):
-        """
-        解析request参数，将数据转换成 requests能解析的类型
-        :param url: 
-        :param data: 
-        :param http_method: 
-        :param content_type: 
-        :return: 
-        """
         if (http_method and http_method.lower() == HttpMethod.GET) or content_type is None:
             return {"url": BaseTrafficParser._simplify_get_request(url), "data": data, "http_method": http_method,
                     "content_type": None}
@@ -81,13 +72,6 @@ class ChromeTrafficParser(BaseTrafficParser):
 
     @staticmethod
     def _simplify_post_request_default(data):
-        """
-        对 application/x-www-form-urlencoded类型参数解析
-        :param data: 
-        :param http_method: 
-        :param content_type: 
-        :return: 
-        """
         result_urls_key = None
         have_parameter = False
         result_parameter = ""
@@ -104,8 +88,8 @@ class ChromeTrafficParser(BaseTrafficParser):
     @staticmethod
     def add_poc_data(url, data, http_method, content_type, poc):
         """
-        在原来数据的基础上替换成poc数据
-        :param url: get类型下完整url post为request数据
+        change the original parameter to poc
+        :param url: 
         :param http_method: 
         :param content_type: 
         :param poc: 
@@ -128,7 +112,7 @@ class ChromeTrafficParser(BaseTrafficParser):
     @staticmethod
     def to_raw(url, data, http_method, content_type):
         """
-        将chrome plugin 流量转换成raw
+        convert chrome plugin traffic to raw
         :param url: 
         :param data: 
         :param http_method: 

@@ -361,7 +361,7 @@ async def create_scan_request(
     scan_request = await crud.crud_scan_request.create(
         db=db, obj_in=obj_in)
 
-    # TODO: start celery app scan here
+    # start celery app scan here
     perform_scan_celery.delay(jsonable_encoder(scan_request))
     return scan_request
 
