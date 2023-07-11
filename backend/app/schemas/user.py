@@ -1,6 +1,17 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
+
+
+class UserRegister(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+
+class UserPasswordEdit(BaseModel):
+    old_password: str
+    new_password: str = Field(..., min_length=7, max_length=100)
 
 
 # Shared properties
