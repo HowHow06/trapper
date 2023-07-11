@@ -6,11 +6,11 @@ const get_hashed_password = require('./utils.js').get_hashed_password;
 const constants = require('./constants.js');
 
 const sequelize = new Sequelize(
-  process.env.DATABASE_NAME,
-  process.env.DATABASE_USER,
-  process.env.DATABASE_PASSWORD,
+  process.env.XSSHUNTER_DATABASE_NAME,
+  process.env.XSSHUNTER_DATABASE_USER,
+  process.env.XSSHUNTER_DATABASE_PASSWORD,
   {
-    host: process.env.DATABASE_HOST,
+    host: process.env.XSSHUNTER_DATABASE_HOST,
     dialect: 'mariadb',
     benchmark: true,
     logging: true,

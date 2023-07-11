@@ -17,8 +17,8 @@ function get_secure_random_string(bytes_length) {
 async function get_hashed_password(password) {
   // If no environment variable is set, default
   // to doing 10 rounds.
-  const bcrypt_rounds = process.env.BCRYPT_ROUNDS
-    ? parseInt(process.env.BCRYPT_ROUNDS)
+  const bcrypt_rounds = process.env.XSSHUNTER_BCRYPT_ROUNDS
+    ? parseInt(process.env.XSSHUNTER_BCRYPT_ROUNDS)
     : 10;
 
   return bcrypt.hash(password, bcrypt_rounds);

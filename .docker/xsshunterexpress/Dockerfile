@@ -5,10 +5,10 @@ RUN mkdir /app/
 WORKDIR /app/
 
 # Copy front-end over
-COPY xsshunter-express/front-end/ /app/front-end/
-WORKDIR /app/front-end/
-RUN npm install
-RUN npm run-script build
+# COPY xsshunter-express/front-end/ /app/front-end/
+# WORKDIR /app/front-end/
+# RUN npm install
+# RUN npm run-script build
 
 WORKDIR /app/
 COPY xsshunter-express/package.json /app/
@@ -28,9 +28,8 @@ COPY xsshunter-express/templates /app/templates
 COPY docker-entrypoint.sh /app/
 RUN chmod +x /app/docker-entrypoint.sh
 
-# Expose both HTTP and HTTPS ports
-EXPOSE 80
-EXPOSE 443
+EXPOSE 55000
+# EXPOSE 443
 
 # Start the server
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

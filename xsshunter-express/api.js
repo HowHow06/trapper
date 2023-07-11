@@ -21,7 +21,7 @@ const validate = require('express-jsonschema').validate;
 const get_hashed_password = require('./utils.js').get_hashed_password;
 const get_secure_random_string = require('./utils.js').get_secure_random_string;
 
-const SCREENSHOTS_DIR = path.resolve(process.env.SCREENSHOTS_DIR);
+const SCREENSHOTS_DIR = path.resolve(process.env.XSSHUNTER_SCREENSHOTS_DIR);
 
 var sessions_middleware = false;
 var sessions_settings_object = {
@@ -50,7 +50,6 @@ async function set_up_api_server(app) {
       `No session secret is set, can't start API server (this really shouldn't happen...)!`
     );
     throw new Error('NO_SESSION_SECRET_SET');
-    return;
   }
 
   const updated_session_settings = {

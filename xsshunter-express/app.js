@@ -12,7 +12,6 @@ const CollectedPages = database.CollectedPages;
 const InjectionRequests = database.InjectionRequests;
 const sequelize = database.sequelize;
 const notification = require('./notification.js');
-const api = require('./api.js');
 const validate = require('express-jsonschema').validate;
 const constants = require('./constants.js');
 
@@ -44,13 +43,16 @@ const XSS_PAYLOAD = fs.readFileSync('./probe.js', 'utf8');
 
 var multer = require('multer');
 var upload = multer({ dest: '/tmp/' });
-const SCREENSHOTS_DIR = path.resolve(process.env.SCREENSHOTS_DIR);
+const SCREENSHOTS_DIR = path.resolve(process.env.XSSHUNTER_SCREENSHOTS_DIR);
 const SCREENSHOT_FILENAME_REGEX = new RegExp(
   /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}\.png$/i
 );
 
 async function get_app_server() {
   const app = express();
+  const hostnameWithPort = `${process.env.XSSHUNTER_HOSTNAME}${
+    process.env.XSSHUNTER_PORT ? `:${process.env.XSSHUNTER_PORT}` : ''
+  }`;
 
   // I have a question for Express:
   // https://youtu.be/ZtjFsQBuJWw?t=4
@@ -265,8 +267,8 @@ async function get_app_server() {
       );
 
       // Send out notification via configured notification channel
-      if (process.env.SMTP_EMAIL_NOTIFICATIONS_ENABLED === 'true') {
-        payload_fire_data.screenshot_url = `https://${process.env.HOSTNAME}/screenshots/${payload_fire_data.screenshot_id}.png`;
+      if (process.env.XSSHUNTER_SMTP_EMAIL_NOTIFICATIONS_ENABLED === 'true') {
+        payload_fire_data.screenshot_url = `https://${hostnameWithPort}/screenshots/${payload_fire_data.screenshot_id}.png`;
         await notification.send_email_notification(payload_fire_data);
       }
     }
@@ -353,7 +355,7 @@ async function get_app_server() {
     const chainload_uri = db_results[1] === null ? '' : db_results[1].value;
 
     res.send(
-      XSS_PAYLOAD.replace(/\[HOST_URL\]/g, `https://${process.env.HOSTNAME}`)
+      XSS_PAYLOAD.replace(/\[HOST_URL\]/g, `https://${hostnameWithPort}`)
         .replace(
           '[COLLECT_PAGE_LIST_REPLACE_ME]',
           JSON.stringify(pages_to_collect)
@@ -373,14 +375,14 @@ async function get_app_server() {
 		However, if the user just wants alerts on payload firing then
 		they can disable the web control panel to reduce attack surface.
 	*/
-  if (process.env.CONTROL_PANEL_ENABLED === 'true') {
-    // Enable API and static asset serving.
-    await api.set_up_api_server(app);
-  } else {
-    console.log(
-      `[INFO] Control panel NOT enabled. Not serving API or GUI server, only acting as a notification server...`
-    );
-  }
+  // if (process.env.XSSHUNTER_CONTROL_PANEL_ENABLED === 'true') {
+  //   // Enable API and static asset serving.
+  //   await api.set_up_api_server(app);
+  // } else {
+  console.log(
+    `[INFO] Control panel NOT enabled. Not serving API or GUI server, only acting as a notification server...`
+  );
+  // }
 
   app.get('/:probe_id', payload_handler);
 
