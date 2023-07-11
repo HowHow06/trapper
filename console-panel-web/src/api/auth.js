@@ -25,6 +25,18 @@ export default function Auth(api) {
     });
   };
 
+  const editPassword = async ({ oldPassword, newPassword }) => {
+    return await apiCall({
+      axiosInstance: api,
+      url: `/auth/edit-password`,
+      method: `put`,
+      params: {
+        old_password: oldPassword,
+        new_password: newPassword,
+      },
+    });
+  };
+
   const testToken = async () => {
     return await apiCall({ axiosInstance: api, url: `/auth/test-token` });
   };
@@ -38,5 +50,6 @@ export default function Auth(api) {
     testToken,
     logout,
     register,
+    editPassword,
   };
 }

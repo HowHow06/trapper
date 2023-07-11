@@ -72,7 +72,7 @@ async def edit_password(
         password_edit.old_password, current_user.hashed_password
     ):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Old password is incorrect")
+                            detail="Original password is incorrect")
 
     user_in_data = current_user.dict()
     user_in_data["password"] = password_edit.new_password
