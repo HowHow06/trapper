@@ -1,9 +1,13 @@
-import NextLink from 'next/link';
-import PropTypes from 'prop-types';
 import { Box, ButtonBase } from '@mui/material';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
+import { useAuth } from 'src/hooks/use-auth';
 
 export const SideNavItem = (props) => {
-  const { active = false, disabled, external, icon, path, title } = props;
+  const { active = false, disabled, external, icon, path, title, action } = props;
+  const router = useRouter();
+  const auth = useAuth();
 
   const linkProps = path
     ? external
@@ -17,6 +21,12 @@ export const SideNavItem = (props) => {
           href: path,
         }
     : {};
+
+  const actionProps = {
+    onClick: () => {
+      action({ router, auth });
+    },
+  };
 
   return (
     <li>
@@ -38,7 +48,7 @@ export const SideNavItem = (props) => {
             backgroundColor: 'rgba(255, 255, 255, 0.04)',
           },
         }}
-        {...linkProps}
+        {...(action ? actionProps : linkProps)}
       >
         {icon && (
           <Box
@@ -89,4 +99,5 @@ SideNavItem.propTypes = {
   icon: PropTypes.node,
   path: PropTypes.string,
   title: PropTypes.string.isRequired,
+  action: PropTypes.func,
 };
