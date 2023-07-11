@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 import api from 'src/api';
 import { VULNERABILITY_TYPE } from 'src/constants/variables';
 import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
-import OverviewRecentTasks from 'src/sections/overview/overview-recent-tasks';
-import OverviewRequestCount from 'src/sections/overview/overview-request-count';
-import OverviewTaskCount from 'src/sections/overview/overview-task-count';
-import OverviewVulnerabilityCount from 'src/sections/overview/overview-vulnerability-count';
-import OverviewVulnerabilityType from 'src/sections/overview/overview-vulnerability-type';
+import OverviewRecentTasks from 'src/sections/dashboard/overview-recent-tasks';
+import OverviewRequestCount from 'src/sections/dashboard/overview-request-count';
+import OverviewTaskCount from 'src/sections/dashboard/overview-task-count';
+import OverviewVulnerabilityCount from 'src/sections/dashboard/overview-vulnerability-count';
+import OverviewVulnerabilityType from 'src/sections/dashboard/overview-vulnerability-type';
 import { isApiSuccess } from 'src/utils/api-call';
 
 const Page = () => {
