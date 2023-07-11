@@ -31,6 +31,8 @@ services:
       - CHOKIDAR_USEPOLLING=true
     env_file:
       - ./.env
+    profiles: # this service will only run when I specify the profile, `docker compose --profile dev up`
+      - dev
 
   queue:
     image: "queue-image" # just image name
@@ -62,6 +64,8 @@ services:
       - CELERY_BROKER_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@queue:5672//
     ports:
       - 5555:5555
+    profiles: # this service will only run when I specify the profile, `docker compose --profile dev up`
+      - dev
 
   celery-worker:
     image: "celery-worker-image" # just image name
