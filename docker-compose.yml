@@ -93,6 +93,7 @@ services:
     environment:
       - XSSHUNTER_DATABASE_HOST=db
       - XSSHUNTER_NODE_ENV=production
+      - XSSHUNTER_SCREENSHOTS_DIR=/app/payload-fire-images
     ports:
       - "${XSSHUNTER_PORT}:55000"
     volumes:
