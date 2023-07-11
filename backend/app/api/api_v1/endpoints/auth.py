@@ -39,7 +39,7 @@ async def register(user_in: schemas.UserRegister, db: AsyncSession = Depends(dep
     if user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The user with this username or email already exists in the system.",
+            detail="The user with this username or email already exists.",
         )
     user_in_data = user_in.dict()
     user_in_data["is_admin"] = False
