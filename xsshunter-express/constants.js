@@ -8,12 +8,12 @@ const session_secret_key = 'SESSION_SECRET';
 const csrf_header_name = 'X-CSRF-Buster';
 
 module.exports = {
-    API_BASE_PATH,
-    session_secret_key,
-    ADMIN_PASSWORD_SETTINGS_KEY,
-    CORRELATION_API_SECRET_SETTINGS_KEY,
-    CHAINLOAD_URI_SETTINGS_KEY,
-    PAGES_TO_COLLECT_SETTINGS_KEY,
-    SEND_ALERT_EMAILS_KEY,
-    csrf_header_name,
+  API_BASE_PATH,
+  session_secret_key,
+  ADMIN_PASSWORD_SETTINGS_KEY,
+  CORRELATION_API_SECRET_SETTINGS_KEY,
+  CHAINLOAD_URI_SETTINGS_KEY,
+  PAGES_TO_COLLECT_SETTINGS_KEY,
+  SEND_ALERT_EMAILS_KEY,
+  csrf_header_name,
 };
