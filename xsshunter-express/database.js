@@ -50,7 +50,7 @@ Settings.init(
   },
   {
     sequelize,
-    modelName: 'settings',
+    modelName: 'xsshunter_setting',
     indexes: [
       {
         unique: true,
@@ -160,7 +160,7 @@ PayloadFireResults.init(
   },
   {
     sequelize,
-    modelName: 'payload_fire_results',
+    modelName: 'xsshunter_payload_fire_result',
     indexes: [
       {
         unique: false,
@@ -233,7 +233,7 @@ CollectedPages.init(
   },
   {
     sequelize,
-    modelName: 'collected_pages',
+    modelName: 'xsshunter_collected_page',
     indexes: [
       {
         unique: false,
@@ -293,7 +293,7 @@ InjectionRequests.init(
   },
   {
     sequelize,
-    modelName: 'injection_requests',
+    modelName: 'xsshunter_injection_request',
     indexes: [
       {
         unique: true,
@@ -301,6 +301,53 @@ InjectionRequests.init(
         method: 'BTREE',
       },
     ],
+  }
+);
+
+class TrapperResult extends Model {}
+TrapperResult.init(
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    request_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    vulnerability_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    payload: {
+      type: Sequelize.TEXT,
+      allowNull: false,
+    },
+    deleted_at: {
+      type: Sequelize.DATE,
+      allowNull: true,
+    },
+    created_at: {
+      type: Sequelize.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.NOW,
+    },
+    updated_at: {
+      type: Sequelize.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.NOW,
+    },
+  },
+  {
+    sequelize, // This is your Sequelize instance
+    modelName: 'Result',
+    tableName: 'result',
+    timestamps: true,
+    paranoid: true, // This will enable "deletedAt"
+    updatedAt: 'updated_at',
+    createdAt: 'created_at',
+    deletedAt: 'deleted_at', // If you want to use 'deleted_at' instead of 'deletedAt' as your column name
   }
 );
 
@@ -426,10 +473,21 @@ async function initialize_correlation_api() {
   }
 
   const api_key = get_secure_random_string(64);
-  await Settings.create({
-    id: uuid.v4(),
-    key: constants.CORRELATION_API_SECRET_SETTINGS_KEY,
-    value: api_key,
+
+  const retryOptions = {
+    max: 5, // maximum amount of tries
+    timeout: 5000, // throw an error if a retry takes longer than 5000ms
+  };
+
+  await sequelize.transaction(retryOptions, async (transaction) => {
+    await Settings.create(
+      {
+        id: uuid.v4(),
+        key: constants.CORRELATION_API_SECRET_SETTINGS_KEY,
+        value: api_key,
+      },
+      { transaction: transaction }
+    );
   });
 }
 
@@ -482,6 +540,7 @@ module.exports = {
   PayloadFireResults,
   CollectedPages,
   InjectionRequests,
+  TrapperResult,
   database_init,
   update_settings_value,
 };
