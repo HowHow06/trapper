@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Stack } from 'react-bootstrap'
+import { Button, Modal, Stack } from 'react-bootstrap'
 import api from '../api'
 import BaseActionButton from '../components/BaseActionButton'
 import { LoadingSpinner } from '../components/LoadingSpinner'
@@ -23,6 +23,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [shouldRefresh, setShouldRefresh] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
 
   const getTaskToStart = (taskFromApi) => {
     const {
@@ -105,6 +106,11 @@ function App() {
 
   const handleSettingClick = () => {
     chrome.runtime.openOptionsPage()
+  }
+
+  const handleStopClick = () => {
+    // Show the confirmation modal
+    setShowConfirmModal(true)
   }
 
   // If isLoading is true, don't render anything.
@@ -196,6 +202,7 @@ function App() {
 
     ignore.current = false
     setShouldRefresh(!shouldRefresh)
+    setShowConfirmModal(false)
   }
 
   const PauseTaskButton = ({ ...rest }) => {
@@ -259,7 +266,7 @@ function App() {
             )} */}
             {/* TODO: show confirmation before stopping */}
             <PauseTaskButton onClick={pauseCurrentTask} />
-            <StopTaskButton onClick={stopCurrentTask} />
+            <StopTaskButton onClick={handleStopClick} />
           </>
         ) : hasCurrentPausedTask ? (
           <>
@@ -291,6 +298,20 @@ function App() {
           </Stack>
         </div>
       </Stack>
+      <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Stop Task</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to stop the task?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={stopCurrentTask}>
+            Stop Task
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </PopupContainer>
   )
 }
