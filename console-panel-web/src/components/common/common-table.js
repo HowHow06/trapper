@@ -5,6 +5,7 @@ import {
   Card,
   Collapse,
   Stack,
+  SvgIcon,
   Table,
   TableBody,
   TableCell,
@@ -227,7 +228,9 @@ const CommonTable = ({
           aria-expanded={expandedRowIds.includes(dataItem[identity])}
           aria-label="show more"
         >
-          <ChevronDownIcon height={20} />
+          <SvgIcon fontSize="small">
+            <ChevronDownIcon />
+          </SvgIcon>
         </ExpandMoreButton>
       </TableCell>
     );

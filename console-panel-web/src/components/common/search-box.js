@@ -45,7 +45,9 @@ const SearchBox = (props) => {
               sx={{ visibility: searchKey ? 'visible' : 'hidden' }}
               onClick={handleClearClick}
             >
-              <XMarkIcon height="1.25rem" />
+              <SvgIcon fontSize="small">
+                <XMarkIcon height="1.25rem" />
+              </SvgIcon>
             </IconButton>
           </InputAdornment>
         }
