@@ -19,7 +19,7 @@ function App() {
     id: '',
     accessKey: '',
     taskStatusId: '',
-  }) // TODO: use custom hook instead
+  }) // TODO: use custom hook to get task
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [shouldRefresh, setShouldRefresh] = useState(false)
@@ -144,7 +144,6 @@ function App() {
     // save task to storage here, so that the event listener can get the value
     // saveTaskToStorage(taskToStart)
 
-    // TODO: add listener here
     sendRuntimeMessagePromise({
       actionName: constants.MESSAGE_ACTION_NAME.START_TASK,
       task: taskToStart,
@@ -196,8 +195,6 @@ function App() {
       return
     }
 
-    // clearAllStorageData()
-    // TODO: remove listener here
     sendRuntimeMessagePromise({ actionName: constants.MESSAGE_ACTION_NAME.STOP_TASK })
 
     ignore.current = false
@@ -264,7 +261,6 @@ function App() {
                 }}
               />
             )} */}
-            {/* TODO: show confirmation before stopping */}
             <PauseTaskButton onClick={pauseCurrentTask} />
             <StopTaskButton onClick={handleStopClick} />
           </>
