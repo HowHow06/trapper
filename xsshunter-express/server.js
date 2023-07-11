@@ -1,6 +1,8 @@
 'use strict';
 
-require('dotenv').config({ path: '../.env' });
+if (process.env.XSSHUNTER_NODE_ENV !== 'docker') {
+  require('dotenv').config({ path: '../.env' });
+}
 const http = require('http');
 const get_app_server = require('./app.js');
 const database = require('./database.js');
