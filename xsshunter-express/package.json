@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "prettier": "prettier --write **/*.{js,jsx,ts,tsx,json,css,scss,md}"
   },
   "author": "mandatory (Matthew Bryant)",
   "license": "MIT",
@@ -30,5 +31,8 @@
     "serve-favicon": "^2.5.0",
     "uuid": "^8.3.2",
     "vue-moment": "^4.1.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1"
   }
 }
