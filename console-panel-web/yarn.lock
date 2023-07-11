@@ -2943,6 +2943,11 @@ svg.select.js@^3.0.1:
   dependencies:
     svg.js "^2.6.5"
 
+sweetalert2@^11.7.16:
+  version "11.7.16"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.7.16.tgz#e78f78325fcefd16498e6328c574f3d4446e505c"
+  integrity sha512-vxqVcA358RWdK/XOG1gFtOzT7qBH186Ry4gnW0Xtrx7vIo1mpnR8hG8MxQms4gz3JPbYQ6UIgZn0+hTK7in3Jw==
+
 synckit@^0.8.5:
   version "0.8.5"
   resolved "https://registry.yarnpkg.com/synckit/-/synckit-0.8.5.tgz#b7f4358f9bb559437f9f167eb6bc46b3c9818fa3"

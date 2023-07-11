@@ -154,7 +154,20 @@ export const AuthProvider = (props) => {
   };
 
   const signUp = async (email, name, password) => {
-    throw new Error('Sign up is not implemented');
+    const response = await api.register({
+      username: name,
+      email: email,
+      password: password,
+    });
+
+    if (isApiSuccess(response)) {
+      // Successful response
+      logger.debug('Register succeeded', response.data);
+    } else {
+      logger.debug('Register failed', response.error);
+      const errorMsg = response.error.response.data.detail ?? 'Failed to register';
+      throw new Error(errorMsg);
+    }
   };
 
   const signOut = async () => {

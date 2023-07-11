@@ -13,6 +13,18 @@ export default function Auth(api) {
     });
   };
 
+  const register = async ({ username, email, password }) => {
+    return await apiCall({
+      axiosInstance: api,
+      url: `/auth/register`,
+      params: {
+        username: username,
+        email: email,
+        password: password,
+      },
+    });
+  };
+
   const testToken = async () => {
     return await apiCall({ axiosInstance: api, url: `/auth/test-token` });
   };
@@ -25,5 +37,6 @@ export default function Auth(api) {
     login,
     testToken,
     logout,
+    register,
   };
 }
