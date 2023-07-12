@@ -8,7 +8,7 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx,json,css,scss,md}",
-    "prod": "forever start server.js",
+    "prod": "forever -f server.js",
     "restart": "forever restart server.js",
     "stop": "forever stop server.js",
     "forever": "forever"

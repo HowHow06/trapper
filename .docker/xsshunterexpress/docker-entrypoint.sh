@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
 # echo "Initializing SSL/TLS..."
 # Set up Greenlock
 # Test if --maintainer-email is required, we can set it via environment variables...
@@ -6,4 +7,4 @@
 # npx greenlock add --subject $HOSTNAME --altnames "$HOSTNAME"
 
 echo "Starting server..."
-node server.js
+yarn prod
