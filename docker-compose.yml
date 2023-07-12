@@ -49,8 +49,8 @@ services:
     command: yarn build
     env_file:
       - ./.env
-    profiles: # this service will only run when I specify the profile, `docker compose --profile dev up`
-      - dev
+    profiles: # this service will only run when I specify the profile, `docker compose --profile extension-build up`
+      - extension-build
 
   queue:
     image: "queue-image" # just image name
