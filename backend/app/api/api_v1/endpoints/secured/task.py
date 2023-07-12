@@ -15,6 +15,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
+# FastAPI have built-in protections against other common web attacks
+# such as Cross Site Scripting (XSS) in case you are serving HTML.
+
 
 @router.get("/", response_model=List[schemas.TaskWithCount])
 async def read_tasks(
