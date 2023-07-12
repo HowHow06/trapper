@@ -106,3 +106,24 @@ services:
       - ./payload-fire-images:/app/payload-fire-images
     # Comment out if you're using an external SQL
     # server and have commented out the DB section.
+
+  backend:
+    image: "backend-image" # just image name
+    depends_on:
+      - db
+      - queue
+      - celery-worker
+    build:
+      context: .
+      dockerfile: ./.docker/backend/Dockerfile
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./.env
+    ports:
+      - 8000:8000
+    environment:
+      - ENVIRONMENT=PROD
+      - CURRENT_ENVIRONMENT=DOCKER # to determine how to get the environment variables, refer to config.py
+      - CELERY_BROKER_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@queue:5672 # need to explicitly set to `queue` instead of `localhost`
+      - MARIADB_SERVER=db
