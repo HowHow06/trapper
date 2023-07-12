@@ -5,6 +5,8 @@ defaultEditor = 'nano'
 blindPayload = ''  # your blind XSS payload
 # blind XSS request for trapper xsshunter
 trapperBlindXSSRequest = 'localhost:55000/?request_id=[request_id]&payload_type=[payload_type]'
+moreReflectedPositionCounterThreshold = 5
+
 xsschecker = 'v3dm0s'  # A non malicious string to check for reflections and stuff
 
 #  More information on adding proxies: http://docs.python-requests.org/en/master/user/advanced/#proxies

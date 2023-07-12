@@ -9,14 +9,15 @@ from app.db.session import AsyncSessionLocal, get_async_db_url
 from core.blindPayloadUtils import PayloadGenerator
 from core.checker import checker
 from core.colors import end, green, que
-from core.config import minEfficiency, xsschecker
+from core.config import (minEfficiency, moreReflectedPositionCounterThreshold,
+                         xsschecker)
 from core.dom import dom
 from core.filterChecker import filterChecker
 from core.generator import generator
 from core.htmlParser import htmlParser
 from core.log import setup_logger
 from core.requester import requester
-from core.utils import getParams, getUrl, getVar
+from core.utils import getParams, getUrl, getVar, updateVar
 from core.wafDetector import wafDetector
 
 payload_generator = PayloadGenerator()
@@ -66,6 +67,8 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
         logger.debug('Url to scan: {}'.format(url))
         params = getParams(target, paramData, GET)
         logger.debug_json('Scan parameters:', params)
+        logger.info('Scan parameters PARAMS: {} | PARAM DATA: {}'.format(
+            params, paramData))
         if not params:
             logger.error('No parameters to test.')
             quit()
@@ -97,7 +100,9 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
                             requester(url, paramsCopy, headers,
                                       GET, delay, timeout)
 
+        latestReflectedPositions = []
         for paramName in params.keys():
+            isSkipToNextParam = False
             paramsCopy = copy.deepcopy(params)
             logger.info('Testing parameter: %s' % paramName)
             if encoding:
@@ -129,6 +134,8 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
             logger.info('Payloads generated: %i' % total)
             progress = 0
             for confidence, vects in vectors.items():
+                if isSkipToNextParam:
+                    break
                 for vect in vects:
                     if core.config.globalVariables['path']:
                         vect = vect.replace('/', '%2F')
@@ -137,8 +144,29 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
                     logger.run('Progress: %i/%i\r' % (progress, total))
                     if not GET:
                         vect = unquote(vect)
+                    previousReflectedPositions = copy.deepcopy(
+                        latestReflectedPositions)
                     efficiencies = checker(
-                        url, paramsCopy, headers, GET, delay, vect, positions, timeout, encoding)
+                        url, paramsCopy, headers, GET, delay, vect, positions, timeout, encoding, previousReflections=latestReflectedPositions)
+                    if len(latestReflectedPositions) > len(previousReflectedPositions) and paramName is not None:
+                        variableName = "{}:counter".format(paramName)
+                        try:
+                            moreReflectedPositionCounter = int(
+                                getVar(variableName))
+                            logger.debug("moreReflectedPositionCounter: {}".format(
+                                moreReflectedPositionCounter))
+                            updateVar(variableName,
+                                      moreReflectedPositionCounter + 1)
+                            if moreReflectedPositionCounter > moreReflectedPositionCounterThreshold:
+                                logger.info(
+                                    "This param is not suitable to test, skipping to next param...")
+                                isSkipToNextParam = True
+                                break
+                        except:
+                            logger.debug(
+                                "initializing moreReflectedPositionCounter: ")
+                            updateVar(variableName, 1)
+
                     if not efficiencies:
                         for i in range(len(occurences)):
                             efficiencies.append(0)

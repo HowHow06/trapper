@@ -100,9 +100,9 @@ class XSStrikeProcess:
             return False, command
         command += ["--url", "{}".format(url)]
         if data and data != "":
-            command += ["--data", "\"{}\"".format(data)]
+            command += ["--data", "{}".format(data)]
         if header_string and isinstance(header_string, str):
-            command += ["--headers", "\"{}\"".format(header_string)]
+            command += ["--headers", "{}".format(header_string)]
         command += ["--trapper-celery", "{}".format(self.request_id)]
         return True, command
 

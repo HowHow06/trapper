@@ -8,7 +8,7 @@ from core.utils import fillHoles, fillHoles2, replaceValue
 from fuzzywuzzy import fuzz
 
 
-def checker(url, params, headers, GET, delay, payload, positions, timeout, encoding):
+def checker(url, params, headers, GET, delay, payload, positions, timeout, encoding, previousReflections=[]):
     checkString = 'st4r7s' + payload + '3nd'
     if encoding:
         checkString = encoding(unquote(checkString))
@@ -44,4 +44,6 @@ def checker(url, params, headers, GET, delay, payload, positions, timeout, encod
             efficiencies.append(0)
         num += 1
     # TRAPPER: removed the part where it removes empty values
+    previousReflections.clear()
+    previousReflections.extend(reflectedPositions)
     return list(efficiencies)
