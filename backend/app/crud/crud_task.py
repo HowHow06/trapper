@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from app.core import constants, task_util
 from app.core.config import get_version
-from app.crud.base import CRUDBase
+from app.crud.base import CRUDBase, CRUDBaseSync
 from app.models import Task
 from app.schemas.task import TaskCreate, TaskUpdate
 from fastapi.encoders import jsonable_encoder
@@ -45,3 +45,10 @@ class CRUDTask(CRUDBase[Task, TaskCreate, TaskUpdate]):
 
 
 crud_task = CRUDTask(Task)
+
+
+class CRUDTaskSync(CRUDBaseSync[Task, TaskCreate, TaskUpdate]):
+    pass
+
+
+crud_task_sync = CRUDTaskSync(Task)
