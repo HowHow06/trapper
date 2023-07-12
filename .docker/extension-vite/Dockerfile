@@ -5,7 +5,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if available)
-COPY extension-vite/package*.json ./
+COPY extension-vite/package.json extension-vite/yarn.lock ./
 
 # Install dependencies
 RUN yarn
