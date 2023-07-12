@@ -1,29 +1,36 @@
-# Use an official Node.js runtime as the base image
-FROM node:18-alpine
-
-
-RUN mkdir /app/
-# Set the working directory in the Docker image
+FROM node:18-alpine AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Add the package.json and package-lock.json (if available) to the Docker image
-COPY console-panel-web/package.json ./
+COPY console-panel-web/package.json console-panel-web/yarn.lock ./
+RUN  yarn
 
-# Install the application dependencies
-RUN yarn
-
-# Add the rest of the application code to the Docker image
-COPY console-panel-web/ .
-
-# Build the Next.js application
-RUN yarn build
-
-# Expose port 3000 in the Docker image
-EXPOSE 3000
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY console-panel-web/. .
 
 ENV NEXT_TELEMETRY_DISABLED 1
-# Start the application
+
+RUN yarn build
+
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+
 CMD ["yarn", "start"]
-
-
-

@@ -127,3 +127,23 @@ services:
       - CURRENT_ENVIRONMENT=DOCKER # to determine how to get the environment variables, refer to config.py
       - CELERY_BROKER_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@queue:5672 # need to explicitly set to `queue` instead of `localhost`
       - MARIADB_SERVER=db
+
+  console-panel-web:
+    image: "console-panel-web-image" # just image name
+    depends_on:
+      - db
+      - queue
+      - celery-worker
+      - backend
+    build:
+      context: .
+      dockerfile: ./.docker/console-panel-web/Dockerfile
+      target: runner
+    volumes:
+      - ./console-panel-web:/app
+    env_file:
+      - ./.env
+    ports:
+      - 3000:3000
+    environment:
+      - API_URL="http://localhost:8000/api/v1"
