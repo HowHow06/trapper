@@ -11,12 +11,12 @@ from core.checker import checker
 from core.colors import end, green, que
 from core.config import (minEfficiency, moreReflectedPositionCounterThreshold,
                          xsschecker)
-from core.dom import dom
 from core.filterChecker import filterChecker
 from core.generator import generator
 from core.htmlParser import htmlParser
 from core.log import setup_logger
 from core.requester import requester
+from core.trapperDom import dom as trapperDom
 from core.utils import getParams, getUrl, getVar, updateVar
 from core.wafDetector import wafDetector
 
@@ -40,7 +40,7 @@ async def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, sk
 
         if not skipDOM:
             logger.run('Checking for DOM vulnerabilities')
-            highlighted = dom(response)
+            highlighted = trapperDom(response)
             if highlighted:
                 logger.good('Potentially vulnerable objects found')
                 logger.red_line(level='good')
