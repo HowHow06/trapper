@@ -116,8 +116,6 @@ services:
     build:
       context: .
       dockerfile: ./.docker/backend/Dockerfile
-    volumes:
-      - ./backend:/app
     env_file:
       - ./.env
     ports:

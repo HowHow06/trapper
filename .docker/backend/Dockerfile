@@ -26,6 +26,8 @@ COPY ./backend /app
 
 ENV PYTHONPATH=/app
 
+COPY ./.docker/backend/docker-entrypoint.sh /app
+RUN chmod +x /app/docker-entrypoint.sh
 
 # Create a non-root user
 RUN useradd -ms /bin/bash backenduser
@@ -37,9 +39,6 @@ RUN chown -R backenduser:backenduser /app
 USER backenduser
 
 EXPOSE 8000
-# # Run the backend with gunicorn
-CMD ["poetry", "run", "gunicorn", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8000"]
 
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
-# # Run the backend with uvicorn
-# CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
