@@ -1,6 +1,7 @@
 from app import crud, schemas
 from app.api import deps
 from app.core import auth as AuthHelper
+from app.core.auth import verify_password
 from app.core.config import settings
 from app.models import User as UserModel
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -32,15 +33,19 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/register", response_model=schemas.UserCreate)
-async def register(user_in: schemas.UserCreate, db: AsyncSession = Depends(deps.get_db)):
+@router.post("/register", response_model=schemas.User)
+async def register(user_in: schemas.UserRegister, db: AsyncSession = Depends(deps.get_db)):
     user = await crud.crud_user.get_by_email_or_username(db, email=user_in.email, username=user_in.username)
     if user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The user with this username already exists in the system.",
+            detail="The user with this username or email already exists.",
         )
-    return await crud.crud_user.create(db, obj_in=user_in)
+    user_in_data = user_in.dict()
+    user_in_data["is_admin"] = False
+    user_in_data = schemas.UserCreate(**user_in_data)
+
+    return await crud.crud_user.create(db, obj_in=user_in_data)
 
 
 @router.post("/logout")
@@ -55,3 +60,23 @@ async def test_token(current_user: UserModel = Depends(deps.get_current_active_u
     Test access token
     """
     return current_user
+
+
+@router.put("/edit-password", response_model=schemas.User)
+async def edit_password(
+    password_edit: schemas.UserPasswordEdit,
+    current_user: UserModel = Depends(deps.get_current_active_user),
+    db: AsyncSession = Depends(deps.get_db),
+):
+    if not verify_password(
+        password_edit.old_password, current_user.hashed_password
+    ):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Original password is incorrect")
+
+    user_in_data = current_user.dict()
+    user_in_data["password"] = password_edit.new_password
+    user_in_data = schemas.UserUpdate(**user_in_data)
+
+    # Update the password
+    return await crud.crud_user.update(db, db_obj=current_user, obj_in=user_in_data)

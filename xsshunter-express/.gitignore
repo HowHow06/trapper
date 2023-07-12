@@ -1,0 +1,13 @@
+*.env
+*/node_modules/*
+node_modules/*
+*.bak
+postgres-db-data/*
+dev.sh
+.DS_Store
+.greenlockrc
+greenlock.d/*
+ssldata/*
+config.env
+payload-fire-images/*.gz
+payload-fire-images/*.png

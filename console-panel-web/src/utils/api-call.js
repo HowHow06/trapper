@@ -1,8 +1,28 @@
-export const apiCall = async ({ axiosInstance, url, params = null, options = {} }) => {
+export const apiCall = async ({
+  axiosInstance,
+  url,
+  method = 'post',
+  params = null,
+  options = {},
+}) => {
   try {
-    const response = params
-      ? await axiosInstance.post(url, params, options)
-      : await axiosInstance.post(url, options);
+    let response;
+
+    switch (method.toLowerCase()) {
+      case 'post':
+        response = await axiosInstance.post(url, params, options);
+        break;
+      case 'put':
+        response = await axiosInstance.put(url, params, options);
+        break;
+      case 'delete':
+        response = await axiosInstance.delete(url, options);
+        break;
+      case 'get':
+      default:
+        response = await axiosInstance.get(url, { ...options, params });
+    }
+
     return { success: true, ...response };
   } catch (error) {
     return { success: false, error: error };

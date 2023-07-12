@@ -1,9 +1,9 @@
-import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
-import api from '../api';
-import { isApiSuccess } from 'src/utils/api-call';
+import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import { DEFAULT } from 'src/constants/variables';
+import { isApiSuccess } from 'src/utils/api-call';
 import logger from 'src/utils/logger';
+import api from '../api';
 
 const HANDLERS_ACTION_TYPES = {
   INITIALIZE: 'INITIALIZE',
@@ -154,7 +154,20 @@ export const AuthProvider = (props) => {
   };
 
   const signUp = async (email, name, password) => {
-    throw new Error('Sign up is not implemented');
+    const response = await api.register({
+      username: name,
+      email: email,
+      password: password,
+    });
+
+    if (isApiSuccess(response)) {
+      // Successful response
+      logger.debug('Register succeeded', response.data);
+    } else {
+      logger.debug('Register failed', response.error);
+      const errorMsg = response.error.response.data.detail ?? 'Failed to register';
+      throw new Error(errorMsg);
+    }
   };
 
   const signOut = async () => {

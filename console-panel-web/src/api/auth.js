@@ -13,6 +13,30 @@ export default function Auth(api) {
     });
   };
 
+  const register = async ({ username, email, password }) => {
+    return await apiCall({
+      axiosInstance: api,
+      url: `/auth/register`,
+      params: {
+        username: username,
+        email: email,
+        password: password,
+      },
+    });
+  };
+
+  const editPassword = async ({ oldPassword, newPassword }) => {
+    return await apiCall({
+      axiosInstance: api,
+      url: `/auth/edit-password`,
+      method: `put`,
+      params: {
+        old_password: oldPassword,
+        new_password: newPassword,
+      },
+    });
+  };
+
   const testToken = async () => {
     return await apiCall({ axiosInstance: api, url: `/auth/test-token` });
   };
@@ -25,5 +49,7 @@ export default function Auth(api) {
     login,
     testToken,
     logout,
+    register,
+    editPassword,
   };
 }

@@ -1,13 +1,15 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from sqlmodel import SQLModel
-
 from alembic import context
-
 from app.db.session import get_db_url
+from app.models.lookup import Lookup
+from app.models.result import Result
+from app.models.scan_request import ScanRequest
+from app.models.task import Task
 from app.models.user import User
+from app.models.vulnerability import Vulnerability
+from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -30,6 +32,8 @@ target_metadata = SQLModel.metadata
 # ... etc.
 
 
+# HOWARD: reference: https://eshlox.net/2017/08/06/alembic-migration-for-string-length-change/
+# add `compare_type=True` argument to context.configure to enable datatype check
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -48,6 +52,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        # compare_type=True # to enable compare field type
     )
 
     with context.begin_transaction():
@@ -69,7 +74,8 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, target_metadata=target_metadata,
+            # compare_type=True # to enable compare field type
         )
 
         with context.begin_transaction():

@@ -1,7 +1,9 @@
+import os
 import secrets
 from pathlib import Path
 from typing import List, Union
 
+import toml
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, validator
 
 
@@ -22,6 +24,14 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_EMAIL: EmailStr
     FIRST_SUPERUSER_USERNAME: str
     FIRST_SUPERUSER_PASSWORD: str
+    FIRST_USER_EMAIL: EmailStr
+    FIRST_USER_USERNAME: str
+    FIRST_USER_PASSWORD: str
+
+    LOOKUP_TYPE_STATUS: str
+    LOOKUP_TYPE_VULNERABILITY_TYPE: str
+    LOOKUP_TYPE_SEVERITY_LEVEL: str
+    TASK_SECRET_KEY: str
 
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
@@ -34,12 +44,26 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
+    CELERY_BROKER_URL: str
+
     class Config:
-        env_file = Path(__file__).resolve().parent.parent.parent.parent / \
-            ".env"  # get absolute path
+        # env_file = Path(__file__).resolve().parent.parent.parent.parent / \
+        #     ".env"  # get absolute path
         env_file_encoding = 'utf-8'
 
 
-dev_path = Path(__file__).resolve().parent.parent.parent.parent / \
-    ".env"  # get absolute path
-settings = Settings(_env_file=dev_path, _env_file_encoding='utf-8')
+current_environment = os.getenv("CURRENT_ENVIRONMENT", "")
+if current_environment != 'DOCKER':
+    dev_path = Path(__file__).resolve().parent.parent.parent.parent / \
+        ".env"  # get absolute path
+    settings = Settings(_env_file=dev_path, _env_file_encoding='utf-8')
+else:
+    settings = Settings()  # get value from OS environment variables
+
+
+def get_version() -> str:
+    tomlFilePath = Path(__file__).resolve().parent.parent.parent / \
+        "pyproject.toml"
+    pyproject = toml.load(tomlFilePath)
+    version = pyproject['tool']['poetry']['version']
+    return version
