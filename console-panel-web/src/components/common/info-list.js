@@ -1,4 +1,4 @@
-import { Card, CardHeader, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Card, CardHeader, Divider, Stack, Typography } from '@mui/material';
 import _get from 'lodash/get';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -75,44 +75,47 @@ const InfoList = ({ title, subtitle, data, columns, ...rest }) => {
       {title && (
         <>
           <CardHeader subheader={subtitle} title={title} />
-
           <Divider />
         </>
       )}
 
-      <List
+      <Stack
+        direction="column"
+        justifyContent="space-evenly"
+        spacing={1}
+        divider={<Divider orientation="horizontal" />}
         sx={{
           m: 0,
-          p: 0,
+          py: 1,
+          height: '100%',
         }}
       >
         {columns.map((column, index) => {
           return (
-            <ListItem divider={index !== columns.length - 1} key={`${index}-${column.accessor}`}>
-              <ListItemText
-                disableTypography
+            <Stack
+              direction="row"
+              alignItems="center"
+              key={`${index}-${column.accessor}`}
+              sx={{
+                px: 2,
+                py: 1,
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                component="h6"
                 sx={{
-                  flex: '1 1 auto',
-                  display: 'flex',
-                  flexDirection: 'row',
+                  textTransform: 'capitalize',
+                  minWidth: '180px',
                 }}
               >
-                <Typography
-                  variant="subtitle2"
-                  component="h6"
-                  sx={{
-                    textTransform: 'capitalize',
-                    minWidth: '180px',
-                  }}
-                >
-                  {column.name}
-                </Typography>
-                {renderValue(column)}
-              </ListItemText>
-            </ListItem>
+                {column.name}
+              </Typography>
+              {renderValue(column)}
+            </Stack>
           );
         })}
-      </List>
+      </Stack>
     </Card>
   );
 };
