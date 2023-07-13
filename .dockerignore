@@ -3,9 +3,8 @@ node_modules
 **/node_modules
 
 # All secrets
-**/.env.local
-**/.env.*.local
-**/.env
+# **/.env.local
+# **/.env.*.local
 **/.env
 
 # By default all git files
@@ -52,3 +51,6 @@ tmp
 
 .idea
 .vscode
+
+# next build
+.next
