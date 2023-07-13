@@ -1,4 +1,4 @@
-import { Box, Container, Stack, Typography } from '@mui/material';
+import { Box, Container, Unstable_Grid2 as Grid, Stack, Typography } from '@mui/material';
 import { groupBy, isEmpty } from 'lodash';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -6,8 +6,9 @@ import { useEffect, useRef, useState } from 'react';
 import api from 'src/api';
 import CommonTable from 'src/components/common/common-table';
 import InfoList from 'src/components/common/info-list';
+import { OverviewBarChart } from 'src/components/dashboard/overview-bar-chart';
 import { SeverityPill } from 'src/components/severity-pill';
-import { SEVERITY_COLOR_MAP, SEVERITY_NAME } from 'src/constants/variables';
+import { SEVERITY_COLOR_MAP, SEVERITY_NAME, VULNERABILITY_TYPE } from 'src/constants/variables';
 import { DashboardLayout } from 'src/layouts/dashboard/dashboard-layout';
 import { isApiSuccess } from 'src/utils/api-call';
 
@@ -195,6 +196,11 @@ const Page = () => {
     );
   };
 
+  const resultsGroupByType = groupBy(results, 'vulnerability_id');
+  const DOMXSSCount = resultsGroupByType[VULNERABILITY_TYPE.DOM_XSS]?.length || 0;
+  const reflectedXSSCount = resultsGroupByType[VULNERABILITY_TYPE.REFLECTED_XSS]?.length || 0;
+  const storedXSSCount = resultsGroupByType[VULNERABILITY_TYPE.STORED_XSS]?.length || 0;
+
   return (
     <>
       <Head>
@@ -215,9 +221,34 @@ const Page = () => {
               </Stack>
             </Stack>
             <Box sx={{ mt: 3 }}>
-              <InfoList data={task} columns={taskInfoColumns} />
+              <Grid container spacing={2}>
+                <Grid xs={12} lg={7}>
+                  <InfoList data={task} columns={taskInfoColumns} sx={{ height: '100%' }} />
+                </Grid>
+                <Grid xs={12} lg={5}>
+                  <OverviewBarChart
+                    chartSeries={[
+                      {
+                        name: 'DOM',
+                        data: [DOMXSSCount],
+                      },
+                      {
+                        name: 'Reflected',
+                        data: [reflectedXSSCount],
+                      },
+                      {
+                        name: 'Stored',
+                        data: [storedXSSCount],
+                      },
+                    ]}
+                    categories={['DOM', 'Reflected', 'Stored']}
+                    sx={{ height: '100%' }}
+                    isLoading={isLoading}
+                    noLabel
+                  />
+                </Grid>
+              </Grid>
             </Box>
-
             {/* Groups Section */}
             <Box sx={{ mt: 3 }}>
               <Stack spacing={1}>

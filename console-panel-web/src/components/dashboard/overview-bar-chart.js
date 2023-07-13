@@ -2,25 +2,25 @@ import { Box, Card, CardContent, CardHeader, Stack, Typography, useTheme } from 
 import PropTypes from 'prop-types';
 import { Chart } from 'src/components/chart';
 
-const useChartOptions = (labels) => {
+const useChartOptions = (categories) => {
   const theme = useTheme();
 
   return {
     chart: {
       background: 'transparent',
+      type: 'bar',
     },
     colors: [theme.palette.primary.main, theme.palette.success.main, theme.palette.warning.main],
+    plotOptions: {
+      bar: {
+        horizontal: true,
+      },
+    },
     dataLabels: {
       enabled: false,
     },
-    labels,
-    legend: {
-      show: false,
-    },
-    plotOptions: {
-      pie: {
-        expandOnClick: false,
-      },
+    xaxis: {
+      categories: categories,
     },
     states: {
       active: {
@@ -34,9 +34,6 @@ const useChartOptions = (labels) => {
         },
       },
     },
-    stroke: {
-      width: 0,
-    },
     theme: {
       mode: theme.palette.mode,
     },
@@ -46,9 +43,9 @@ const useChartOptions = (labels) => {
   };
 };
 
-export const OverviewPieChart = (props) => {
-  const { chartSeries, labels, sx, title, isLoading = false, noLabel = false } = props;
-  const chartOptions = useChartOptions(labels);
+export const OverviewBarChart = (props) => {
+  const { chartSeries, categories, sx, title, isLoading = false, noLabel = false } = props;
+  const chartOptions = useChartOptions(categories);
 
   return (
     <Card sx={sx}>
@@ -57,13 +54,7 @@ export const OverviewPieChart = (props) => {
         {isLoading ? (
           <>Loading...</>
         ) : (
-          <Chart
-            height={300}
-            options={chartOptions}
-            series={chartSeries}
-            type="donut"
-            width="100%"
-          />
+          <Chart height={300} options={chartOptions} series={chartSeries} type="bar" width="100%" />
         )}
         <Stack
           alignItems="center"
@@ -74,7 +65,7 @@ export const OverviewPieChart = (props) => {
         >
           {!noLabel &&
             chartSeries.map((item, index) => {
-              const label = labels[index];
+              const label = categories[index];
               return (
                 <Box
                   key={label}
@@ -88,7 +79,7 @@ export const OverviewPieChart = (props) => {
                     {label}
                   </Typography>
                   <Typography color="text.secondary" variant="subtitle2">
-                    {item}
+                    {item.data[0]}
                   </Typography>
                 </Box>
               );
@@ -99,8 +90,8 @@ export const OverviewPieChart = (props) => {
   );
 };
 
-OverviewPieChart.propTypes = {
+OverviewBarChart.propTypes = {
   chartSeries: PropTypes.array.isRequired,
-  labels: PropTypes.array.isRequired,
+  categories: PropTypes.array.isRequired,
   sx: PropTypes.object,
 };
