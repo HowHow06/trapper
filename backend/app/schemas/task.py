@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
+from app.schemas.user import User
 from pydantic import BaseModel
 
 
@@ -50,3 +51,4 @@ class TaskInDB(TaskInDBBase):
 class TaskWithCount(Task):
     scan_request_count: int
     result_count: Optional[int]
+    created_by_user: Optional[User]
