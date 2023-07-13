@@ -29,6 +29,10 @@ const columns = [
     accessor: 'result_count',
   },
   {
+    name: 'Created By',
+    accessor: 'created_by_user.username',
+  },
+  {
     name: 'Created At',
     accessor: 'created_at',
     type: 'datetime',

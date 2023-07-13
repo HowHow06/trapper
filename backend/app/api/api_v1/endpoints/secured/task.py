@@ -153,6 +153,7 @@ async def read_task(
     task_data = jsonable_encoder(task)
     task_data["scan_request_count"] = len(task.scan_requests)
     task_data["result_count"] = len(results)
+    task_data["created_by_user"] = task.created_by_user
 
     taskWithCount = schemas.TaskWithCount(**task_data)
     return taskWithCount
