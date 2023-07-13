@@ -155,8 +155,8 @@ services:
       context: .
       dockerfile: ./.docker/console-panel-web/Dockerfile
       target: runner
-    volumes:
-      - ./console-panel-web:/app
+    # volumes:
+    #   - ./console-panel-web:/app
     env_file:
       - ./.env
     ports:
