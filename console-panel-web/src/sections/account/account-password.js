@@ -24,7 +24,7 @@ export const AccountPassword = () => {
       confirm: '',
     },
     validationSchema: Yup.object({
-      originalPassword: Yup.string().required('Confirm Password is required'),
+      originalPassword: Yup.string().required('Original Password is required'),
       password: passwordSchema,
       confirm: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
