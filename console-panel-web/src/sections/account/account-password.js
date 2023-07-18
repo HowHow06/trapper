@@ -45,7 +45,7 @@ export const AccountPassword = () => {
         }
         Swal.fire({
           icon: 'success',
-          title: 'Password edited successful!',
+          title: 'Password edited successfully!',
           confirmButtonText: 'OK',
           timer: 1500,
         }).then(() => {
