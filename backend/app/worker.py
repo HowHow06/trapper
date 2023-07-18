@@ -1,11 +1,10 @@
-import asyncio
 import json
 import logging
 from datetime import datetime
 
 from app import crud, models, scan_task
 from app.core.celery_app import celery_app
-from app.db.session import AsyncSessionLocal, SyncSessionLocal
+from app.db.session import SyncSessionLocal
 
 logger = logging.getLogger("trapper_server")
 logger.setLevel(logging.INFO)

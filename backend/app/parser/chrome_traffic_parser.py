@@ -63,7 +63,7 @@ class ChromeTrafficParser(BaseTrafficParser):
                 return {"url": url, "data": ChromeTrafficParser._parse_post_parameter(data, content_type),
                         "http_method": http_method, "content_type": ContentType.ResourceContentType.XML}
             elif ContentType.ResourceContentType.FORM in content_type.lower():
-                # 暂时不处理
+                # not massaging the data
                 return {"url": url, "data": data, "http_method": http_method,
                         "content_type": ContentType.ResourceContentType.FORM}
             elif ContentType.ResourceContentType.TXT in content_type.lower():

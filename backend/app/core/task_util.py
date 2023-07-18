@@ -18,12 +18,14 @@ def generate_task_access_key(user_id: int, task_id: int) -> str:
     ct_bytes = cipher.encrypt(pad(data, AES.block_size))
     iv = cipher.iv
     result = iv + ct_bytes
-    # convert bytes to base64 string to ensure it can be safely transmitted or stored without risk of modification or data loss
+    # convert bytes to base64 string to ensure it can be safely transmitted or stored without risk of modification or data loss when decoding with UTF-8
+    # decode UTF-8 is just to convert bytes to string
     return b64encode(result).decode('utf-8')
 
 
 def decipher_task_access_key(access_key: str) -> Tuple[int, int]:
     key = settings.TASK_SECRET_KEY.encode('utf-8')
+    # We already start with a Python string object, so there's no need to encode it to UTF-8 first
     # Convert base64 string to bytes
     raw = b64decode(access_key)
     # Extract the IV and ciphertext from the raw bytes
