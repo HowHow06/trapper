@@ -15,6 +15,10 @@ const ResetPasswordPage = () => {
   const { token } = router.query;
 
   useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
     if (!token) {
       Swal.fire({
         icon: 'error',
@@ -24,7 +28,7 @@ const ResetPasswordPage = () => {
         router.push('/auth/login');
       });
     }
-  }, [token]);
+  }, [token, router.isReady]);
 
   const formik = useFormik({
     initialValues: {

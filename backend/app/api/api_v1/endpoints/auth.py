@@ -20,6 +20,10 @@ router = APIRouter()
 async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(deps.get_db)):
     user_temp = await crud.crud_user.get_by_username(db, username=form_data.username)
 
+    if user_temp is None or not user_temp:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Incorrect username or password")
+
     # If the user_temp has been blocked within the last 30 minutes
     if user_temp.blocked_at and user_temp.blocked_at > datetime.utcnow() - timedelta(minutes=30):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
@@ -28,10 +32,6 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
     # If the user_temp has been blocked but not within the last 30 minutes
     if user_temp.blocked_at and not user_temp.blocked_at > datetime.utcnow() - timedelta(minutes=30):
         await crud.crud_user.reset_login_trial(db, db_obj=user_temp)
-
-    if not user_temp:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Incorrect username or password")
 
     # use OAuth2PasswordRequestForm to support authorization in openapi docs
     user = await crud.crud_user.authenticate(
@@ -116,7 +116,7 @@ async def recover_password(email: str, db: AsyncSession = Depends(deps.get_db)):
     """
     user = await crud.crud_user.get_by_email(db, email=email)
 
-    if (crud.crud_user.is_admin(user)):
+    if user is not None and crud.crud_user.is_admin(user):
         raise HTTPException(
             status_code=404,
             detail="Password recovery for this account is disabled.",
@@ -154,8 +154,6 @@ async def reset_password(
             status_code=404,
             detail="The user with this username does not exist in the system.",
         )
-    elif not crud.crud_user.is_active(user):
-        raise HTTPException(status_code=400, detail="Inactive user")
 
     user_in_data = user.dict()
     user_in_data["password"] = new_password
