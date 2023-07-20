@@ -6,6 +6,7 @@ const withAlphas = (color) => {
     alpha4: alpha(color.main, 0.04),
     alpha8: alpha(color.main, 0.08),
     alpha12: alpha(color.main, 0.12),
+    alpha20: alpha(color.main, 0.2),
     alpha30: alpha(color.main, 0.3),
     alpha50: alpha(color.main, 0.5),
   };
