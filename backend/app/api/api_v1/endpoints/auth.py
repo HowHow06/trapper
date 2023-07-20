@@ -2,7 +2,7 @@ from app import crud, schemas
 from app.api import deps
 from app.core import auth as AuthHelper
 from app.core.auth import (generate_password, generate_password_reset_token,
-                           get_password_hash, send_reset_password_email,
+                           send_reset_password_email,
                            send_reset_password_success_email, verify_password,
                            verify_password_reset_token)
 from app.core.config import settings
@@ -106,7 +106,7 @@ async def recover_password(email: str, db: AsyncSession = Depends(deps.get_db)):
 
 @router.post("/reset-password/")
 async def reset_password(
-    token: str = Body(...),
+    token: str,
     # new_password: str = Body(...),
     db: AsyncSession = Depends(deps.get_db),
 ):
