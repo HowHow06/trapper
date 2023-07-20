@@ -163,5 +163,6 @@ async def reset_password(
 
     # Update the password
     updated_user = await crud.crud_user.update(db, db_obj=user, obj_in=user_in_data)
+    await crud.crud_user.reset_login_trial(db, db_obj=user)
 
     return {"message": "Password updated successfully"}

@@ -4,6 +4,7 @@ from datetime import datetime
 
 from app import crud, models, scan_task
 from app.core.celery_app import celery_app
+from app.core.email_util import send_complete_scan_email
 from app.db.session import SyncSessionLocal
 
 logger = logging.getLogger("trapper_server")
@@ -35,5 +36,6 @@ def change_scan_status(task_id, status_id):
 
         obj_in = models.Task(**task_data)
 
-        crud.crud_task_sync.update(db=db, db_obj=task, obj_in=obj_in)
+        updated_task = crud.crud_task_sync.update(db=db, db_obj=task, obj_in=obj_in)
+        send_complete_scan_email(email_to=updated_task.created_by_user.email, task_name=updated_task.task_name, task_id=updated_task.id)
         return f"Change status of task {task_id} to {status_id}"
