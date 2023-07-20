@@ -3,6 +3,11 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
+class PasswordReset(BaseModel):
+    token: str
+    new_password: str
+
+
 class UserRegister(BaseModel):
     username: str
     email: EmailStr

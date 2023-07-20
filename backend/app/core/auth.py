@@ -4,37 +4,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
-import emails
 import jwt
 from app.core.config import settings
-from emails.template import JinjaTemplate
+from app.core.email_util import send_email
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ALGORITHM = "HS256"
-
-
-def send_email(
-    email_to: str,
-    subject_template: str = "",
-    html_template: str = "",
-    environment: Dict[str, Any] = {},
-) -> None:
-    assert settings.EMAILS_ENABLED, "no provided configuration for email variables"
-    message = emails.Message(
-        subject=JinjaTemplate(subject_template),
-        html=JinjaTemplate(html_template),
-        mail_from=(settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL),
-    )
-    smtp_options = {"host": settings.SMTP_HOST, "port": settings.SMTP_PORT}
-    # if settings.SMTP_TLS:
-    #     smtp_options["tls"] = True
-    if settings.SMTP_USER:
-        smtp_options["user"] = settings.SMTP_USER
-    if settings.SMTP_PASSWORD:
-        smtp_options["password"] = settings.SMTP_PASSWORD
-    response = message.send(to=email_to, render=environment, smtp=smtp_options)
 
 
 def create_access_token(
@@ -82,10 +59,13 @@ def send_reset_password_email(email_to: str, email: str, token: str) -> None:
         },
     )
 
+
+# No longer using the function below
 def send_reset_password_success_email(email_to: str, email: str, new_password: str) -> None:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Password Reset Successful for user {email}"
-    template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "reset_password_success.html"
+    template_path = Path(settings.EMAIL_TEMPLATES_DIR) / \
+        "reset_password_success.html"
     print(template_path)
     with open(template_path) as f:
         template_str = f.read()

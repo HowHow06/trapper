@@ -170,6 +170,38 @@ export const AuthProvider = (props) => {
     }
   };
 
+  const forgotPassword = async (email) => {
+    const response = await api.forgotPassword({
+      email: email,
+    });
+
+    if (isApiSuccess(response)) {
+      // Successful response
+      logger.debug('Password Recovery Request succeeded', response.data);
+    } else {
+      logger.debug('Password Recovery Request failed', response.error);
+      const errorMsg =
+        response.error.response.data.detail ?? 'Failed to request for Password Recovery';
+      throw new Error(errorMsg);
+    }
+  };
+
+  const resetPassword = async (token, password) => {
+    const response = await api.resetPassword({
+      token: token,
+      password: password,
+    });
+
+    if (isApiSuccess(response)) {
+      // Successful response
+      logger.debug('Reset Password succeeded', response.data);
+    } else {
+      logger.debug('Reset Password failed', response.error);
+      const errorMsg = response.error.response.data.detail ?? 'Failed to Reset Password';
+      throw new Error(errorMsg);
+    }
+  };
+
   const signOut = async () => {
     const response = await api.logout();
 
@@ -193,6 +225,8 @@ export const AuthProvider = (props) => {
         signIn,
         signUp,
         signOut,
+        forgotPassword,
+        resetPassword,
       }}
     >
       {children}

@@ -45,11 +45,28 @@ export default function Auth(api) {
     return await apiCall({ axiosInstance: api, url: `/auth/logout` });
   };
 
+  const forgotPassword = async ({ email }) => {
+    return await apiCall({ axiosInstance: api, url: `/auth/password-recovery/${email}` });
+  };
+
+  const resetPassword = async ({ token, password }) => {
+    return await apiCall({
+      axiosInstance: api,
+      url: `/auth/reset-password`,
+      params: {
+        token: token,
+        new_password: password,
+      },
+    });
+  };
+
   return {
     login,
     testToken,
     logout,
     register,
     editPassword,
+    forgotPassword,
+    resetPassword,
   };
 }

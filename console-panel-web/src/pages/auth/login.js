@@ -124,7 +124,6 @@ const Page = () => {
                     value={formik.values.password}
                   />
                 </Stack>
-                {/* <FormHelperText sx={{ mt: 1 }}>Optionally you can skip.</FormHelperText> */}
                 {formik.errors.submit && (
                   <Typography color="error" sx={{ mt: 3 }} variant="body2">
                     {formik.errors.submit}
@@ -136,6 +135,18 @@ const Page = () => {
                 {/* <Button fullWidth size="large" sx={{ mt: 3 }} onClick={handleSkip}>
                   Skip authentication
                 </Button> */}
+
+                <Typography color="text.secondary" variant="body2" sx={{ mt: 3 }} textAlign={'end'}>
+                  Forgot your password?{' '}
+                  <Link
+                    component={NextLink}
+                    href="/auth/forgot-password"
+                    underline="hover"
+                    variant="subtitle2"
+                  >
+                    Reset Here
+                  </Link>
+                </Typography>
               </form>
             )}
           </div>

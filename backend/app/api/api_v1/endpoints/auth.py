@@ -92,10 +92,16 @@ async def recover_password(email: str, db: AsyncSession = Depends(deps.get_db)):
     """
     user = await crud.crud_user.get_by_email(db, email=email)
 
+    if (crud.crud_user.is_admin(user)):
+        raise HTTPException(
+            status_code=404,
+            detail="Password recovery for this account is disabled.",
+        )
+
     if not user:
         raise HTTPException(
             status_code=404,
-            detail="The user with this username does not exist in the system.",
+            detail="The user with this email does not exist in the system.",
         )
     password_reset_token = generate_password_reset_token(email=email)
     send_reset_password_email(
@@ -106,13 +112,15 @@ async def recover_password(email: str, db: AsyncSession = Depends(deps.get_db)):
 
 @router.post("/reset-password/")
 async def reset_password(
-    token: str,
-    # new_password: str = Body(...),
+    password_reset: schemas.PasswordReset,
     db: AsyncSession = Depends(deps.get_db),
 ):
     """
     Reset password
     """
+    token = password_reset.token
+    new_password = password_reset.new_password
+
     email = verify_password_reset_token(token)
     if not email:
         raise HTTPException(status_code=400, detail="Invalid token")
@@ -125,14 +133,11 @@ async def reset_password(
     elif not crud.crud_user.is_active(user):
         raise HTTPException(status_code=400, detail="Inactive user")
 
-    new_password = generate_password(10)
     user_in_data = user.dict()
     user_in_data["password"] = new_password
     user_in_data = schemas.UserUpdate(**user_in_data)
 
     # Update the password
     updated_user = await crud.crud_user.update(db, db_obj=user, obj_in=user_in_data)
-    send_reset_password_success_email(
-        email_to=user.email, email=email, new_password=new_password)
 
     return {"message": "Password updated successfully"}
