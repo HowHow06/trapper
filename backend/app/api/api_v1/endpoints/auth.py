@@ -1,10 +1,13 @@
 from app import crud, schemas
 from app.api import deps
 from app.core import auth as AuthHelper
-from app.core.auth import verify_password
+from app.core.auth import (generate_password, generate_password_reset_token,
+                           get_password_hash, send_reset_password_email,
+                           send_reset_password_success_email, verify_password,
+                           verify_password_reset_token)
 from app.core.config import settings
 from app.models import User as UserModel
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -80,3 +83,56 @@ async def edit_password(
 
     # Update the password
     return await crud.crud_user.update(db, db_obj=current_user, obj_in=user_in_data)
+
+
+@router.post("/password-recovery/{email}")
+async def recover_password(email: str, db: AsyncSession = Depends(deps.get_db)):
+    """
+    Password Recovery
+    """
+    user = await crud.crud_user.get_by_email(db, email=email)
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this username does not exist in the system.",
+        )
+    password_reset_token = generate_password_reset_token(email=email)
+    send_reset_password_email(
+        email_to=user.email, email=email, token=password_reset_token
+    )
+    return {"message": "Password recovery email sent"}
+
+
+@router.post("/reset-password/")
+async def reset_password(
+    token: str = Body(...),
+    # new_password: str = Body(...),
+    db: AsyncSession = Depends(deps.get_db),
+):
+    """
+    Reset password
+    """
+    email = verify_password_reset_token(token)
+    if not email:
+        raise HTTPException(status_code=400, detail="Invalid token")
+    user = await crud.crud_user.get_by_email(db, email=email)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this username does not exist in the system.",
+        )
+    elif not crud.crud_user.is_active(user):
+        raise HTTPException(status_code=400, detail="Inactive user")
+
+    new_password = generate_password(10)
+    user_in_data = user.dict()
+    user_in_data["password"] = new_password
+    user_in_data = schemas.UserUpdate(**user_in_data)
+
+    # Update the password
+    updated_user = await crud.crud_user.update(db, db_obj=user, obj_in=user_in_data)
+    send_reset_password_success_email(
+        email_to=user.email, email=email, new_password=new_password)
+
+    return {"message": "Password updated successfully"}

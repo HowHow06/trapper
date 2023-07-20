@@ -1,13 +1,40 @@
+import random
+import string
 from datetime import datetime, timedelta
-from typing import Any, Optional, Union
+from pathlib import Path
+from typing import Any, Dict, Optional, Union
 
+import emails
 import jwt
 from app.core.config import settings
+from emails.template import JinjaTemplate
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ALGORITHM = "HS256"
+
+
+def send_email(
+    email_to: str,
+    subject_template: str = "",
+    html_template: str = "",
+    environment: Dict[str, Any] = {},
+) -> None:
+    assert settings.EMAILS_ENABLED, "no provided configuration for email variables"
+    message = emails.Message(
+        subject=JinjaTemplate(subject_template),
+        html=JinjaTemplate(html_template),
+        mail_from=(settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL),
+    )
+    smtp_options = {"host": settings.SMTP_HOST, "port": settings.SMTP_PORT}
+    # if settings.SMTP_TLS:
+    #     smtp_options["tls"] = True
+    if settings.SMTP_USER:
+        smtp_options["user"] = settings.SMTP_USER
+    if settings.SMTP_PASSWORD:
+        smtp_options["password"] = settings.SMTP_PASSWORD
+    response = message.send(to=email_to, render=environment, smtp=smtp_options)
 
 
 def create_access_token(
@@ -33,13 +60,58 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
+def send_reset_password_email(email_to: str, email: str, token: str) -> None:
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Password recovery for user {email}"
+    template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "reset_password.html"
+    print(template_path)
+    with open(template_path) as f:
+        template_str = f.read()
+    server_host = settings.VITE_CONSOLE_PANEL_URL
+    link = f"{server_host}/auth/reset-password?token={token}"
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "project_name": settings.PROJECT_NAME,
+            "username": email,
+            "email": email_to,
+            "valid_hours": settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
+            "link": link,
+        },
+    )
+
+def send_reset_password_success_email(email_to: str, email: str, new_password: str) -> None:
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Password Reset Successful for user {email}"
+    template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "reset_password_success.html"
+    print(template_path)
+    with open(template_path) as f:
+        template_str = f.read()
+    server_host = settings.VITE_CONSOLE_PANEL_URL
+    link = f"{server_host}/auth/login"
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "project_name": settings.PROJECT_NAME,
+            "username": email,
+            "email": email_to,
+            "new_password": new_password,
+            "link": link,
+        },
+    )
+
+
 def generate_password_reset_token(email: str) -> str:
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     now = datetime.utcnow()
     expires = now + delta
     exp = expires.timestamp()
     encoded_jwt = jwt.encode(
-        {"exp": exp, "nbf": now, "sub": email}, settings.ACCESS_TOKEN_SECRET_KEY, algorithm="HS256",
+        {"exp": exp, "nbf": now, "sub": email}, settings.ACCESS_TOKEN_SECRET_KEY, algorithm=ALGORITHM,
     )
     return encoded_jwt
 
@@ -47,7 +119,14 @@ def generate_password_reset_token(email: str) -> str:
 def verify_password_reset_token(token: str) -> Optional[str]:
     try:
         decoded_token = jwt.decode(
-            token, settings.ACCESS_TOKEN_SECRET_KEY, algorithms=["HS256"])
-        return decoded_token["email"]
-    except jwt.JWTError:
+            token, settings.ACCESS_TOKEN_SECRET_KEY, algorithms=[ALGORITHM])
+        return decoded_token["sub"]  # user's email
+    except (jwt.PyJWTError) as error:
         return None
+
+
+def generate_password(length: int = 8):
+    """Generate a random password of a given length"""
+    all_chars = string.ascii_letters + string.digits
+    password = ''.join(random.choice(all_chars) for i in range(length))
+    return password

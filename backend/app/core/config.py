@@ -1,7 +1,7 @@
 import os
 import secrets
 from pathlib import Path
-from typing import List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import toml
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, validator
@@ -34,6 +34,29 @@ class Settings(BaseSettings):
     TASK_SECRET_KEY: str
 
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+
+    PROJECT_NAME: str
+    # SMTP_TLS: bool = True
+    SMTP_PORT: Optional[int] = None
+    SMTP_HOST: Optional[str] = None
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    EMAILS_FROM_EMAIL: Optional[EmailStr] = None
+    EMAILS_FROM_NAME: Optional[str] = None
+
+    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
+    EMAIL_TEMPLATES_DIR: str = "/backend/app/email-templates"
+    EMAILS_ENABLED: bool = False
+
+    VITE_CONSOLE_PANEL_URL: AnyHttpUrl
+
+    @validator("EMAILS_ENABLED", pre=True)
+    def get_emails_enabled(cls, v: bool, values: Dict[str, Any]) -> bool:
+        return bool(
+            values.get("SMTP_HOST")
+            and values.get("SMTP_PORT")
+            and values.get("EMAILS_FROM_EMAIL")
+        )
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
