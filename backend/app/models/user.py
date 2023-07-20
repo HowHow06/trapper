@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from app.models import TimestampModel
@@ -14,3 +15,5 @@ class User(TimestampModel, table=True):
     is_active: bool = Field(default=True)
     tasks: Optional[List["Task"]] = Relationship(
         back_populates="created_by_user")
+    login_trial: int = Field(default=0)
+    blocked_at: Optional[datetime] = Field(nullable=True)

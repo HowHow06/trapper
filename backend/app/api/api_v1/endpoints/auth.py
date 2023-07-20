@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from app import crud, schemas
 from app.api import deps
 from app.core import auth as AuthHelper
@@ -16,14 +18,36 @@ router = APIRouter()
 
 @router.post("/login", response_model=schemas.Token)
 async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(deps.get_db)):
+    user_temp = await crud.crud_user.get_by_username(db, username=form_data.username)
+
+    # If the user_temp has been blocked within the last 30 minutes
+    if user_temp.blocked_at and user_temp.blocked_at > datetime.utcnow() - timedelta(minutes=30):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Too many failed attempts, try again later")
+
+    # If the user_temp has been blocked but not within the last 30 minutes
+    if user_temp.blocked_at and not user_temp.blocked_at > datetime.utcnow() - timedelta(minutes=30):
+        await crud.crud_user.reset_login_trial(db, db_obj=user_temp)
+
+    if not user_temp:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Incorrect username or password")
+
     # use OAuth2PasswordRequestForm to support authorization in openapi docs
     user = await crud.crud_user.authenticate(
         db, username=form_data.username, password=form_data.password
     )
+
     if not user:
+        if user_temp is not None:
+            await crud.crud_user.increment_login_trial(db, db_obj=user_temp)
+            user_temp = await crud.crud_user.get_by_username(db, username=form_data.username)
+            if user_temp.login_trial >= 3:
+                await crud.crud_user.block_user(db, db_obj=user_temp)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect username or password")
 
+    await crud.crud_user.reset_login_trial(db, db_obj=user)
     access_token = AuthHelper.create_access_token(user.id)
     response.set_cookie(
         key="access_token",

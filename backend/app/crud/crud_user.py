@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from app.core.auth import get_password_hash, verify_password
@@ -55,6 +56,42 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
+
+        await db.commit()
+        await db.refresh(db_obj)
+
+        return db_obj
+
+    async def increment_login_trial(self, db: AsyncSession, *, db_obj: User) -> User:
+        if db_obj.deleted_at is not None:
+            return db_obj
+
+        login_trial = db_obj.login_trial
+
+        setattr(db_obj, "login_trial", login_trial + 1)
+
+        await db.commit()
+        await db.refresh(db_obj)
+
+        return db_obj
+
+    async def block_user(self, db: AsyncSession, *, db_obj: User) -> User:
+        if db_obj.deleted_at is not None:
+            return db_obj
+
+        setattr(db_obj, "blocked_at", datetime.utcnow())
+
+        await db.commit()
+        await db.refresh(db_obj)
+
+        return db_obj
+
+    async def reset_login_trial(self, db: AsyncSession, *, db_obj: User) -> User:
+        if db_obj.deleted_at is not None:
+            return db_obj
+
+        setattr(db_obj, "login_trial", 0)
+        setattr(db_obj, "blocked_at", None)
 
         await db.commit()
         await db.refresh(db_obj)
