@@ -23,7 +23,11 @@ const Page = () => {
   useEffect(() => {
     const initialize = async () => {
       const fetchTasks = async () => {
-        const response = await api.getTasks({ sortBy: 'created_at', isDescOrder: true });
+        const response = await api.getTasks({
+          sortBy: 'created_at',
+          isDescOrder: true,
+          limit: 1000,
+        });
         if (response && isApiSuccess(response)) {
           const tasks = response.data;
           setTasks(tasks);
@@ -31,7 +35,7 @@ const Page = () => {
       };
 
       const fetchRequests = async () => {
-        const response = await api.getScanRequests({});
+        const response = await api.getScanRequests({ limit: 1000 });
         if (response && isApiSuccess(response)) {
           const scanRequests = response.data;
           setScanRequests(scanRequests);
@@ -39,7 +43,7 @@ const Page = () => {
       };
 
       const fetchResults = async () => {
-        const response = await api.getResults({});
+        const response = await api.getResults({ limit: 1000 });
         if (response && isApiSuccess(response)) {
           const results = response.data;
           setResults(results);
